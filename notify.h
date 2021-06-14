@@ -1,3 +1,6 @@
+// imgui-notify by patrickcjk
+// https://github.com/patrickcjk/imgui-notify
+
 #pragma once
 #include <vector>
 #include "font_awesome_5.h"
@@ -10,6 +13,14 @@
 #define NOTIFY_FADE_IN_OUT_TIME		150			// Find in and out duration
 #define NOTIFY_DEFAULT_DISMISS		3000		// Auto dismiss after X ms
 #define NOTIFY_OPACITY				1.0f		// 0-1 Toast opacity
+
+#define NOTIFY_COLOR_ERROR			{ 255, 0, 0, 255 }		// Error
+#define NOTIFY_COLOR_WARNING		{ 255, 255, 0, 255 }	// Yellow
+#define NOTIFY_COLOR_SUCCESS		{ 0, 255, 0, 255 }		// Green
+#define NOTIFY_COLOR_INFO			{ 0, 157, 255, 255 }	// Blue
+#define NOTIFY_COLOR_DEFAULT		{ 255, 255, 255, 255 }	// White
+
+#define NOTIFY_TOAST_FLAGS			ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoFocusOnAppearing
 
 enum class toast_type
 {
@@ -61,9 +72,21 @@ public:
 		va_end(args);
 	}
 
-	auto get_content() -> char*
+	auto get_color() -> ImVec4
 	{
-		return content;
+		switch (type)
+		{
+		case toast_type::toast_type_success:
+			return NOTIFY_COLOR_SUCCESS;
+		case toast_type::toast_type_warning:
+			return NOTIFY_COLOR_WARNING;
+		case toast_type::toast_type_error:
+			return NOTIFY_COLOR_ERROR;
+		case toast_type::toast_type_info:
+			return NOTIFY_COLOR_INFO;
+		default:
+			return NOTIFY_COLOR_DEFAULT;
+		}
 	}
 
 	auto get_icon() -> char*
@@ -156,8 +179,6 @@ namespace notify
 	/// </summary>
 	void render()
 	{
-		const auto flags = ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoFocusOnAppearing;
-
 		const auto vp_size = ImGui::GetMainViewport()->Size;
 
 		float height = 0.f;
@@ -181,11 +202,11 @@ namespace notify
 			auto opacity = NOTIFY_OPACITY * current_toast->get_fade_percent();
 
 			// Window rendering
-			auto text_color = ImGui::GetStyle().Colors[ImGuiCol_Text]; text_color.w = opacity;
+			auto text_color = current_toast->get_color(); text_color.w = opacity;
 			ImGui::PushStyleColor(ImGuiCol_Text, text_color);
 			ImGui::SetNextWindowBgAlpha(opacity);
 			ImGui::SetNextWindowPos(ImVec2(vp_size.x - NOTIFY_PADDING_X, vp_size.y - NOTIFY_PADDING_Y - height), ImGuiCond_Always, ImVec2(1.0f, 1.0f));
-			ImGui::Begin(window_name, NULL, flags);
+			ImGui::Begin(window_name, NULL, NOTIFY_TOAST_FLAGS);
 
 			// Here we render the toast content
 			{
@@ -193,11 +214,11 @@ namespace notify
 
 				if (current_toast->type != toast_type::toast_type_none)
 				{
-					sprintf_s(buffer, "%s  %s", current_toast->get_icon(), current_toast->get_content());
+					sprintf_s(buffer, "%s  %s", current_toast->get_icon(), current_toast->content);
 				}
 				else
 				{
-					strcpy_s(buffer, current_toast->get_content());
+					strcpy_s(buffer, current_toast->content);
 				}
 
 				// For debugging purposes only
