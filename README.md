@@ -3,6 +3,8 @@ Is a header-only wrapper made to create notifications with [Dear ImGui](https://
 
 ## Usage
 ```c++
+#include "notify.h"
+
 // Initialisation, once at the beggining of your code, usually after ImGui_ImplDX12_Init()
 notify::init();
 
