@@ -34,7 +34,7 @@ notify::render();
 ```
 
 ## TODO
-Add a fade in and out movement, add text colors based on toast type...
+Add a fade in and out movement...
 
 ## Result
-[![Result](https://i.gyazo.com/a6ae4c884aa5a0ea24acdb80501b8f6f.gif)](https://gyazo.com/a6ae4c884aa5a0ea24acdb80501b8f6f)
+[![Image from Gyazo](https://i.gyazo.com/2c8a6b7aa030a80e54e993058ca80559.gif)](https://gyazo.com/2c8a6b7aa030a80e54e993058ca80559)
