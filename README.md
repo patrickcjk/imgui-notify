@@ -1,9 +1,8 @@
 # imgui-notify
-As I couldn't find any library for this I just decided to create my own.
+As I couldn't find any library for this I just decided to create my own. We will use font awesome 5 for icons.
 
 ## Usage
 ```c++
-
 // Initialisation, once at the beggining of your code, usually after ImGui_ImplDX12_Init()
 notify::init();
 
@@ -32,8 +31,8 @@ if (ImGui::Button("info!"))
 notify::render();
 ```
 
-## Result
-[![Result](https://i.gyazo.com/a6ae4c884aa5a0ea24acdb80501b8f6f.gif)](https://gyazo.com/a6ae4c884aa5a0ea24acdb80501b8f6f)
-
 ## TODO
 Add a fade in and out movement, add text colors based on toast type...
+
+## Result
+[![Result](https://i.gyazo.com/a6ae4c884aa5a0ea24acdb80501b8f6f.gif)](https://gyazo.com/a6ae4c884aa5a0ea24acdb80501b8f6f)
