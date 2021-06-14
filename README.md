@@ -11,7 +11,7 @@ notify::init();
 // Add a new toast
 if (ImGui::Button("success!"))
 {
-    notify::insert({ toast_type::toast_type_success, 3000, "Hello World! This is a success!" });
+    notify::insert({ toast_type::toast_type_success, 3000, "Hello World! This is a success! %s", "We can also format here:)" });
 }
 
 if (ImGui::Button("warning!"))
