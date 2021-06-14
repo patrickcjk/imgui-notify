@@ -1,5 +1,5 @@
 # imgui-notify
-As I couldn't find any library for this I just decided to create my own. We will use font awesome 5 for icons.
+Is a header-only wrapper made to create notifications with [Dear ImGui](https://github.com/ocornut/imgui). As I couldn't find any library for this I just decided to create my own. We will use [Font Awesome 5](https://fontawesome.com/) for icons.
 
 ## Usage
 ```c++
