@@ -1,6 +1,9 @@
 // imgui-notify by patrickcjk
 // https://github.com/patrickcjk/imgui-notify
 
+#ifndef IMGUI_NOTIFY
+#define IMGUI_NOTIFY
+
 #pragma once
 #include <vector>
 #include "font_awesome_5.h"
@@ -89,7 +92,7 @@ public:
 		}
 	}
 
-	auto get_icon() -> char*
+	auto get_icon() -> const char*
 	{
 		switch (type)
 		{
@@ -114,7 +117,7 @@ public:
 
 	auto get_phase() -> toast_phase
 	{
-		const auto elapsed = get_elapsed_time(); // millisecondes écoulées depuis la création du toast
+		const auto elapsed = get_elapsed_time();
 
 		if (elapsed > NOTIFY_FADE_IN_OUT_TIME + this->dismiss_time + NOTIFY_FADE_IN_OUT_TIME)
 		{
@@ -156,11 +159,11 @@ public:
 namespace notify
 {
 	inline std::vector<toast> toast_list;
-	
+
 	/// <summary>
 	/// Insert a new toast in the list
 	/// </summary>
-	void insert(const toast& msg)
+	inline void insert(const toast& msg)
 	{
 		toast_list.push_back(msg);
 	}
@@ -169,7 +172,7 @@ namespace notify
 	/// Remove a toast from the list by its index
 	/// </summary>
 	/// <param name="index">index of the toast to remove</param>
-	void remove(int index)
+	inline void remove(int index)
 	{
 		toast_list.erase(toast_list.begin() + index);
 	}
@@ -177,7 +180,7 @@ namespace notify
 	/// <summary>
 	/// Render toasts, call at the end of your rendering!
 	/// </summary>
-	void render()
+	inline void render()
 	{
 		const auto vp_size = ImGui::GetMainViewport()->Size;
 
@@ -238,10 +241,12 @@ namespace notify
 	/// <summary>
 	/// Adds font-awesome font, must be called ONCE on initialization
 	/// </summary>
-	void init()
+	inline void init()
 	{
 		static const ImWchar icons_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
 		ImFontConfig icons_config; icons_config.MergeMode = true; icons_config.PixelSnapH = true;
 		ImGui::GetIO().Fonts->AddFontFromMemoryTTF((void*)fa_solid_900, sizeof(fa_solid_900), 13.f, &icons_config, icons_ranges);
 	}
 }
+
+#endif
