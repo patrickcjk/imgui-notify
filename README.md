@@ -1,7 +1,8 @@
 # imgui-notify
 Is a header-only wrapper made to create notifications with [Dear ImGui](https://github.com/ocornut/imgui). As I couldn't find any library for this I just decided to create my own. We will use [Font Awesome 5](https://fontawesome.com/) for icons.
 
-[![badge](https://forthebadge.com/images/badges/made-with-c-plus-plus.svg)](https://forthebadge.com)
+[![forthebadge](https://forthebadge.com/images/badges/made-with-c-plus-plus.svg)](https://forthebadge.com)
+[![forthebadge](https://forthebadge.com/images/badges/built-with-love.svg)](https://forthebadge.com)
 
 ## Usage
 ```c++
