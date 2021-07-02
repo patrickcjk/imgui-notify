@@ -1,5 +1,4 @@
 #pragma once
-#include "stdafx.h"
 
 const uint8_t fa_solid_900[] =
 {

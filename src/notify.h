@@ -240,11 +240,17 @@ namespace notify
 
 	/// <summary>
 	/// Adds font-awesome font, must be called ONCE on initialization
+	/// <param name="FontDataOwnedByAtlas">Fonts are loaded from read-only memory, should be set to false!</param>
 	/// </summary>
-	inline void init()
+	inline void init(bool FontDataOwnedByAtlas = false)
 	{
 		static const ImWchar icons_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
-		ImFontConfig icons_config; icons_config.MergeMode = true; icons_config.PixelSnapH = true;
+		
+		ImFontConfig icons_config; 
+		icons_config.MergeMode = true; 
+		icons_config.PixelSnapH = true;
+		icons_config.FontDataOwnedByAtlas = FontDataOwnedByAtlas;
+
 		ImGui::GetIO().Fonts->AddFontFromMemoryTTF((void*)fa_solid_900, sizeof(fa_solid_900), 13.f, &icons_config, icons_ranges);
 	}
 }
