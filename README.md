@@ -11,7 +11,7 @@ Is a header-only wrapper made to create notifications with [Dear ImGui](https://
 // We must load a font before loading notify, because we cannot merge font-awesome with default font
 // FontDataOwnedByAtlas = false is required (also in notify::init)
 // because otherwise ImGui will call free() while freeing resources which will lead into a crash
-// since tahoma_ttf is defined as const and wasn't allocated with malloc()
+// since tahoma_ttf is read-only
 ImFontConfig font_cfg;
 font_cfg.FontDataOwnedByAtlas = false;
 io->Fonts->AddFontFromMemoryTTF((void*)tahoma_ttf, sizeof(tahoma_ttf), 17.f, &font_cfg);
