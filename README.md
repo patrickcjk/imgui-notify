@@ -8,8 +8,16 @@ Is a header-only wrapper made to create notifications with [Dear ImGui](https://
 ```c++
 #include "notify.h"
 
+// We must load a font before loading notify, because we cannot merge font-awesome with default font
+// FontDataOwnedByAtlas = false is required (also in notify::init)
+// because otherwise ImGui will call free() while freeing resources which will lead into a crash
+// since tahoma_ttf is defined as const and wasn't allocated with malloc()
+ImFontConfig font_cfg;
+font_cfg.FontDataOwnedByAtlas = false;
+io->Fonts->AddFontFromMemoryTTF((void*)tahoma_ttf, sizeof(tahoma_ttf), 17.f, &font_cfg);
+
 // Initialisation, once at the beggining of your code, usually after ImGui_ImplDX12_Init()
-notify::init();
+notify::init(false);
 
 // Add a new toast
 if (ImGui::Button("success!"))
