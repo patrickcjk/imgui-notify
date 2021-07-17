@@ -182,8 +182,13 @@ namespace notify
 	/// </summary>
 	inline void render()
 	{
-		const auto vp_size = ImGui::GetMainViewport()->Size;
-
+		auto vp_size = ImGui::GetMainViewport()->Size;
+		bool ViewportsEnable = false;
+		if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+		{
+			vp_size = ImGui::GetViewportPlatformMonitor(ImGui::GetMainViewport())->MainSize;
+			ViewportsEnable = true;
+		}
 		float height = 0.f;
 
 		for (auto i = 0; i < toast_list.size(); i++)
@@ -208,7 +213,10 @@ namespace notify
 			auto text_color = current_toast->get_color(); text_color.w = opacity;
 			ImGui::PushStyleColor(ImGuiCol_Text, text_color);
 			ImGui::SetNextWindowBgAlpha(opacity);
-			ImGui::SetNextWindowPos(ImVec2(vp_size.x - NOTIFY_PADDING_X, vp_size.y - NOTIFY_PADDING_Y - height), ImGuiCond_Always, ImVec2(1.0f, 1.0f));
+			if (ViewportsEnable)
+				ImGui::SetNextWindowPos(ImVec2(vp_size.x - NOTIFY_PADDING_X, vp_size.y - NOTIFY_PADDING_Y), ImGuiCond_Always, ImVec2(1.0f, 1.0f));
+			else
+				ImGui::SetNextWindowPos(ImVec2(vp_size.x - NOTIFY_PADDING_X, vp_size.y - NOTIFY_PADDING_Y - height), ImGuiCond_Always, ImVec2(1.0f, 1.0f));
 			ImGui::Begin(window_name, NULL, NOTIFY_TOAST_FLAGS);
 
 			// Here we render the toast content
