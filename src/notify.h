@@ -213,10 +213,7 @@ namespace notify
 			auto text_color = current_toast->get_color(); text_color.w = opacity;
 			ImGui::PushStyleColor(ImGuiCol_Text, text_color);
 			ImGui::SetNextWindowBgAlpha(opacity);
-			if (ViewportsEnable)
-				ImGui::SetNextWindowPos(ImVec2(vp_size.x - NOTIFY_PADDING_X, vp_size.y - NOTIFY_PADDING_Y), ImGuiCond_Always, ImVec2(1.0f, 1.0f));
-			else
-				ImGui::SetNextWindowPos(ImVec2(vp_size.x - NOTIFY_PADDING_X, vp_size.y - NOTIFY_PADDING_Y - height), ImGuiCond_Always, ImVec2(1.0f, 1.0f));
+			ImGui::SetNextWindowPos(ImVec2(vp_size.x - NOTIFY_PADDING_X, vp_size.y - NOTIFY_PADDING_Y - height), ImGuiCond_Always, ImVec2(1.0f, 1.0f));
 			ImGui::Begin(window_name, NULL, NOTIFY_TOAST_FLAGS);
 
 			// Here we render the toast content
