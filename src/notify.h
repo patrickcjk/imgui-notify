@@ -182,8 +182,13 @@ namespace notify
 	/// </summary>
 	inline void render()
 	{
-		const auto vp_size = ImGui::GetMainViewport()->Size;
-
+		auto vp_size = ImGui::GetMainViewport()->Size;
+		bool ViewportsEnable = false;
+		if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+		{
+			vp_size = ImGui::GetViewportPlatformMonitor(ImGui::GetMainViewport())->MainSize;
+			ViewportsEnable = true;
+		}
 		float height = 0.f;
 
 		for (auto i = 0; i < toast_list.size(); i++)
