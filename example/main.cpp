@@ -1,6 +1,7 @@
-#include "imgui.h"
-#include "imgui_impl_win32.h"
-#include "imgui_impl_dx12.h"
+#include "imgui/imgui.h"
+#include "imgui/imgui_impl_win32.h"
+#include "imgui/imgui_impl_dx12.h"
+
 #include <d3d12.h>
 #include <dxgi1_4.h>
 #include <tchar.h>
@@ -51,8 +52,124 @@ FrameContext* WaitForNextFrameResources();
 void ResizeSwapChain(HWND hWnd, int width, int height);
 LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
-#include "../src/notify.h"
+#include "src/imgui_notify.h"
 #include "tahoma.h"
+
+void init()
+{
+	ImGuiIO* io = &ImGui::GetIO();
+
+	// We must load a font before loading notify, because we cannot merge font-awesome with default font
+	// FontDataOwnedByAtlas = false is required (also in ImGui::MergeIconsWithLatestFont())
+	// because otherwise ImGui will call free() while freeing resources which will lead into a crash
+	// since tahoma is defined as readonly and wasn't allocated with malloc()
+	ImFontConfig font_cfg;
+	font_cfg.FontDataOwnedByAtlas = false;
+	io->Fonts->AddFontFromMemoryTTF((void*)tahoma, sizeof(tahoma), 17.f, &font_cfg);
+
+	// Initialize notify
+	ImGui::MergeIconsWithLatestFont(16.f, false);
+}
+
+void render()
+{
+	ImGui::SetNextWindowPos({ 50, 50 }, ImGuiCond_Once);
+	ImGui::SetNextWindowSize({ 550, 550 }, ImGuiCond_Once);
+	ImGui::Begin("Hello World!", NULL, NULL);
+
+	if (ImGui::CollapsingHeader("Examples without title", ImGuiTreeNodeFlags_DefaultOpen))
+	{
+		if (ImGui::Button("Success"))
+		{
+			ImGui::InsertNotification({ ImGuiToastType_Success, 3000, "Hello World! This is a success! %s", "We can also format here:)" });
+		}
+
+		ImGui::SameLine();
+		if (ImGui::Button("Warning"))
+		{
+			ImGui::InsertNotification({ ImGuiToastType_Warning, 3000, "Hello World! This is a warning!" });
+		}
+
+		ImGui::SameLine();
+		if (ImGui::Button("Error"))
+		{
+			ImGui::InsertNotification({ ImGuiToastType_Error, 3000, "Hello World! This is an error!" });
+		}
+
+		ImGui::SameLine();
+		if (ImGui::Button("Info"))
+		{
+			ImGui::InsertNotification({ ImGuiToastType_Info, 3000, "Hello World! This is an info!" });
+		}
+
+		ImGui::SameLine();
+		if (ImGui::Button("Info long"))
+		{
+			ImGui::InsertNotification({ ImGuiToastType_Info, 3000, "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation" });
+		}
+	}
+
+	if (ImGui::CollapsingHeader("Do it yourself", ImGuiTreeNodeFlags_DefaultOpen))
+	{
+		static char title[4096] = "A wonderful quote!";
+		ImGui::InputTextMultiline("Title", title, sizeof(title));
+
+		static char content[4096] = "Ours is a friendship forged once in this life, and again in the next. Goodbye, my brother. \n- Dembe Zuma";
+		ImGui::InputTextMultiline("Content", content, sizeof(content));
+
+		static int duration = 5000; // 5 seconds
+		ImGui::InputInt("Duration (ms)", &duration, 100);
+		if (duration < 0) duration = 0; // Shouldn't be negative
+
+		static char* type_str[] = { "None", "Success", "Warning", "Error", "Info" };
+		static ImGuiToastType type = ImGuiToastType_Success;
+		IM_ASSERT(type < ImGuiToastType_COUNT);
+
+		if (ImGui::BeginCombo("Type", type_str[type]))
+		{
+			for (auto n = 0; n < IM_ARRAYSIZE(type_str); n++)
+			{
+				const bool is_selected = (type == n);
+
+				if (ImGui::Selectable(type_str[n], is_selected))
+					type = n;
+
+				if (is_selected)
+					ImGui::SetItemDefaultFocus();
+			}
+
+			ImGui::EndCombo();
+		}
+
+		static bool enable_title = true, enable_content = true;
+		ImGui::Checkbox("Enable title", &enable_title);
+		ImGui::SameLine();
+		ImGui::Checkbox("Enable content", &enable_content);
+
+		if (ImGui::Button("Show"))
+		{
+			ImGuiToast toast(type, duration);
+
+			if (enable_title)
+				toast.set_title(title);
+
+			if (enable_content)
+				toast.set_content(content);
+
+			ImGui::InsertNotification(toast);
+		}
+	}
+
+	ImGui::End();
+
+	// Render toasts on top of everything, at the end of your code!
+	// You should push style vars here
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 5.f);
+	ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(43.f / 255.f, 43.f / 255.f, 43.f / 255.f, 100.f / 255.f));
+	ImGui::RenderNotifications();
+	ImGui::PopStyleVar(1); // Don't forget to Pop()
+	ImGui::PopStyleColor(1);
+}
 
 // Main code
 int main(int, char**)
@@ -61,7 +178,7 @@ int main(int, char**)
 	//ImGui_ImplWin32_EnableDpiAwareness();
 	WNDCLASSEX wc = { sizeof(WNDCLASSEX), CS_CLASSDC, WndProc, 0L, 0L, GetModuleHandle(NULL), NULL, NULL, NULL, NULL, _T("ImGui Example"), NULL };
 	::RegisterClassEx(&wc);
-	HWND hwnd = ::CreateWindowW(wc.lpszClassName, _T("Dear ImGui DirectX12 Example"), WS_OVERLAPPEDWINDOW, 0, 0, 1000, 500, NULL, NULL, wc.hInstance, NULL);
+	HWND hwnd = ::CreateWindowW(wc.lpszClassName, _T("Dear ImGui DirectX12 Example"), WS_OVERLAPPEDWINDOW, 0, 0, 1150, 700, NULL, NULL, wc.hInstance, NULL);
 
 	// Initialize Direct3D
 	if (!CreateDeviceD3D(hwnd))
@@ -86,21 +203,12 @@ int main(int, char**)
 	ImGui_ImplWin32_Init(hwnd);
 	ImGui_ImplDX12_Init(g_pd3dDevice, NUM_FRAMES_IN_FLIGHT, DXGI_FORMAT_R8G8B8A8_UNORM, g_pd3dSrvDescHeap, g_pd3dSrvDescHeap->GetCPUDescriptorHandleForHeapStart(), g_pd3dSrvDescHeap->GetGPUDescriptorHandleForHeapStart());
 
-	// We must load a font before loading notify, because we cannot merge font-awesome with default font
-	// FontDataOwnedByAtlas = false is required (also in notify::init)
-	// because otherwise ImGui will call free() while freeing resources which will lead into a crash
-	// since tahoma_ttf is defined as const and wasn't allocated with malloc()
-	ImFontConfig font_cfg;
-	font_cfg.FontDataOwnedByAtlas = false;
-	io->Fonts->AddFontFromMemoryTTF((void*)tahoma_ttf, sizeof(tahoma_ttf), 17.f, &font_cfg);
-
-	// Initialize notify
-	notify::init(false);
+	init();
 
 	// Our state
 	bool show_demo_window = true;
 	bool show_another_window = false;
-	ImVec4 clear_color = ImVec4(0, 0, 0, 0);
+	ImVec4 clear_color = ImVec4(54.f / 255.f, 111.f / 255.f, 217.f / 255.f, 255.f / 255.f);
 
 	// Main loop
 	MSG msg;
@@ -122,40 +230,7 @@ int main(int, char**)
 		}
 
 		// Rendering
-		{
-			ImGui::Begin("Hello World!");
-
-			// Add a new toast
-			if (ImGui::Button("success!"))
-			{
-				notify::insert({ toast_type::toast_type_success, 3000, "Hello World! This is a success! %s", "We can also format here:)" });
-			}
-
-			if (ImGui::Button("warning!"))
-			{
-				notify::insert({ toast_type::toast_type_warning, 3000, "Hello World! This is a warning!" });
-			}
-
-			if (ImGui::Button("error!"))
-			{
-				notify::insert({ toast_type::toast_type_error, 3000, "Hello World! This is an error!" });
-			}
-
-			if (ImGui::Button("info!"))
-			{
-				notify::insert({ toast_type::toast_type_info, 3000, "Hello World! This is an info!" });
-			}
-
-			if (ImGui::Button("info!"))
-			{
-				notify::insert({ toast_type::toast_type_info, 3000, "Hello World! This is an info! Yes I also support multiline text! Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation" });
-			}
-
-			ImGui::End();
-
-			// Render toasts on top of everything, at the end of your code!
-			notify::render();
-		}
+		render();
 
 		// End scene
 		{
