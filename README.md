@@ -66,8 +66,8 @@ ImGui::PopStyleVar(1); // Don't forget to Pop()
 ImGui::PopStyleColor(1);
 ```
 
-## Result
-![Image from Gyazo](https://i.imgur.com/ckcpOHJ.gif)
+## Showcase
+![Showcase](https://i.imgur.com/ckcpOHJ.gif)
 
-### License
-![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/patrickcjk/imgui-notify/blob/main/LICENSE)
+## License
+[![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/patrickcjk/imgui-notify/blob/main/LICENSE)
