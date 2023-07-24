@@ -206,8 +206,6 @@ int main(int, char**)
 	init();
 
 	// Our state
-	bool show_demo_window = true;
-	bool show_another_window = false;
 	ImVec4 clear_color = ImVec4(54.f / 255.f, 111.f / 255.f, 217.f / 255.f, 255.f / 255.f);
 
 	// Main loop
