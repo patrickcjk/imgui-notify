@@ -7,8 +7,11 @@
 #pragma once
 #include <vector>
 #include <string>
+#include <chrono>
 #include "font_awesome_5.h"
 #include "fa_solid_900.h"
+#include "imgui/imgui.h"
+#include "imgui/imgui_internal.h"
 
 #define NOTIFY_MAX_MSG_LENGTH			4096		// Max message content length
 #define NOTIFY_PADDING_X				20.f		// Bottom-left X padding
@@ -17,7 +20,7 @@
 #define NOTIFY_FADE_IN_OUT_TIME			150			// Fade in and out duration
 #define NOTIFY_DEFAULT_DISMISS			3000		// Auto dismiss after X ms (default, applied only of no data provided in constructors)
 #define NOTIFY_OPACITY					1.0f		// 0-1 Toast opacity
-#define NOTIFY_TOAST_FLAGS				ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoFocusOnAppearing
+#define NOTIFY_TOAST_FLAGS				ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoSavedSettings//| ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoFocusOnAppearing
 // Comment out if you don't want any separator between title and content
 #define NOTIFY_USE_SEPARATOR
 
@@ -63,11 +66,11 @@ enum ImGuiToastPos_
 class ImGuiToast
 {
 private:
-	ImGuiToastType	type = ImGuiToastType_None;
-	char			title[NOTIFY_MAX_MSG_LENGTH];
-	char			content[NOTIFY_MAX_MSG_LENGTH];
-	int				dismiss_time = NOTIFY_DEFAULT_DISMISS;
-	uint64_t		creation_time = 0;
+	ImGuiToastType							type = ImGuiToastType_None;
+	char									title[NOTIFY_MAX_MSG_LENGTH];
+	char									content[NOTIFY_MAX_MSG_LENGTH];
+	int										dismiss_time = NOTIFY_DEFAULT_DISMISS;
+	std::chrono::system_clock::time_point	creation_time = std::chrono::system_clock::now();
 
 private:
 	// Setters
@@ -89,7 +92,7 @@ public:
 
 	NOTIFY_INLINE auto get_title() -> char* { return this->title; };
 
-	NOTIFY_INLINE auto get_default_title() -> char*
+	NOTIFY_INLINE auto get_default_title() -> const char*
 	{
 		if (!strlen(this->title))
 		{
@@ -113,7 +116,7 @@ public:
 
 	NOTIFY_INLINE auto get_type() -> const ImGuiToastType& { return this->type; };
 
-	NOTIFY_INLINE auto get_color() -> const ImVec4&
+	NOTIFY_INLINE auto get_color() -> const ImVec4
 	{
 		switch (this->type)
 		{
@@ -128,6 +131,7 @@ public:
 		case ImGuiToastType_Info:
 			return { 0, 157, 255, 255 }; // Blue
 		}
+		return { 0, 0, 0, 0 };
 	}
 
 	NOTIFY_INLINE auto get_icon() -> const char*
@@ -145,16 +149,16 @@ public:
 		case ImGuiToastType_Info:
 			return ICON_FA_INFO_CIRCLE;
 		}
+		return "";
 	}
 
 	NOTIFY_INLINE auto get_content() -> char* { return this->content; };
 
-	NOTIFY_INLINE auto get_elapsed_time() { return GetTickCount64() - this->creation_time; }
+	NOTIFY_INLINE auto get_elapsed_time() { return std::chrono::system_clock::now() - this->creation_time; }
 
-	NOTIFY_INLINE auto get_phase() -> const ImGuiToastPhase&
+	NOTIFY_INLINE auto get_phase() -> const ImGuiToastPhase
 	{
-		const auto elapsed = get_elapsed_time();
-
+		const auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(get_elapsed_time()).count();
 		if (elapsed > NOTIFY_FADE_IN_OUT_TIME + this->dismiss_time + NOTIFY_FADE_IN_OUT_TIME)
 		{
 			return ImGuiToastPhase_Expired;
@@ -176,7 +180,7 @@ public:
 	NOTIFY_INLINE auto get_fade_percent() -> const float
 	{
 		const auto phase = get_phase();
-		const auto elapsed = get_elapsed_time();
+		const auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(get_elapsed_time()).count();
 
 		if (phase == ImGuiToastPhase_FadeIn)
 		{
@@ -199,7 +203,7 @@ public:
 
 		this->type = type;
 		this->dismiss_time = dismiss_time;
-		this->creation_time = GetTickCount64();
+		this->creation_time = std::chrono::system_clock::now();
 
 		memset(this->title, 0, sizeof(this->title));
 		memset(this->content, 0, sizeof(this->content));
@@ -217,7 +221,7 @@ namespace ImGui
 	/// <summary>
 	/// Insert a new toast in the list
 	/// </summary>
-	NOTIFY_INLINE VOID InsertNotification(const ImGuiToast& toast)
+	NOTIFY_INLINE void InsertNotification(const ImGuiToast& toast)
 	{
 		notifications.push_back(toast);
 	}
@@ -226,7 +230,7 @@ namespace ImGui
 	/// Remove a toast from the list by its index
 	/// </summary>
 	/// <param name="index">index of the toast to remove</param>
-	NOTIFY_INLINE VOID RemoveNotification(int index)
+	NOTIFY_INLINE void RemoveNotification(int index)
 	{
 		notifications.erase(notifications.begin() + index);
 	}
@@ -234,7 +238,7 @@ namespace ImGui
 	/// <summary>
 	/// Render toasts, call at the end of your rendering!
 	/// </summary>
-	NOTIFY_INLINE VOID RenderNotifications()
+	NOTIFY_INLINE void RenderNotifications()
 	{
 		const auto vp_size = GetMainViewport()->Size;
 
@@ -259,7 +263,7 @@ namespace ImGui
 			const auto opacity = current_toast->get_fade_percent(); // Get opacity based of the current phase
 
 			// Window rendering
-			auto text_color = current_toast->get_color();
+			ImVec4 text_color = current_toast->get_color();
 			text_color.w = opacity;
 
 			// Generate new unique name for this toast
@@ -270,7 +274,7 @@ namespace ImGui
 			SetNextWindowBgAlpha(opacity);
 			SetNextWindowPos(ImVec2(vp_size.x - NOTIFY_PADDING_X, vp_size.y - NOTIFY_PADDING_Y - height), ImGuiCond_Always, ImVec2(1.0f, 1.0f));
 			Begin(window_name, NULL, NOTIFY_TOAST_FLAGS);
-
+			BringWindowToDisplayFront(GetCurrentWindow());
 			// Here we render the toast content
 			{
 				PushTextWrapPos(vp_size.x / 3.f); // We want to support multi-line text, this will wrap the text after 1/3 of the screen width
@@ -338,7 +342,7 @@ namespace ImGui
 	/// Adds font-awesome font, must be called ONCE on initialization
 	/// <param name="FontDataOwnedByAtlas">Fonts are loaded from read-only memory, should be set to false!</param>
 	/// </summary>
-	NOTIFY_INLINE VOID MergeIconsWithLatestFont(float font_size, bool FontDataOwnedByAtlas = false)
+	NOTIFY_INLINE void MergeIconsWithLatestFont(float font_size, bool FontDataOwnedByAtlas = false)
 	{
 		static const ImWchar icons_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
 
