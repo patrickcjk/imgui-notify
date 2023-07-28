@@ -13,10 +13,10 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Install Dependencies
-      run:
+      run: |
         sudo apt-get update
         sudo apt-get install -y libglfw3-dev libsdl2-dev gcc-multilib g++-multilib libfreetype6-dev libvulkan-dev
     - name: make
-      run:
+      run: |
         cd example
         make
