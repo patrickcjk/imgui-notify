@@ -1,44 +1,55 @@
-# imgui-notify
-Is a header-only wrapper made to create notifications with [Dear ImGui](https://github.com/ocornut/imgui). As I couldn't find any library for this I just decided to create my own. We will use [Font Awesome 5](https://fontawesome.com/) for icons.
+#  ImGuiNotify
+Is a header-only wrapper made to create notifications with [Dear ImGui](https://github.com/ocornut/imgui). Fork of [imgui-notify](https://github.com/patrickcjk/imgui-notify) by [patrickcjk](https://github.com/patrickcjk).
 
-[![forthebadge](https://forthebadge.com/images/badges/made-with-c-plus-plus.svg)](https://forthebadge.com)
-[![forthebadge](https://forthebadge.com/images/badges/built-with-love.svg)](https://forthebadge.com)
+Requires [Font Awesome 6](https://fontawesome.com/) for icons ([Setup example](https://github.com/juliettef/IconFontCppHeaders)).
 
-## Requirements
-- You must use a font other than the default one. Font-Awesome icons used in this library cannot be merged with default font. You can use Tahoma (provided in the example project).
-- If you load the font using AddFontFromMemoryTTF (from memory, instead of from a file on disk) and memory is read-only as in the example, you must pass a ImFontConfig structure with FontDataOwnedByAtlas = false to prevent imgui from attempting to free the buffer (which will lead into a crash).
+## Latest changes (v0.0.1)
+### Added
+- Linux support
+- Documentation
 
-## Changes in version 2
-- Toast now contains a title. If no title is provided, a default one is used (ImGuiToastType_Success will result in "Success")
-- Added getters and setters to get/set private properties
-- Added assertions
-- Constructors will only accept a content (formatting is possible), title must be set with ImGuiToast::set_title() (see example)
-- "notify" namespace was removed, we now use "ImGui" namespace for a better implementation
-- "notify::init" was removed, you must now call "ImGui::MergeIconsWithLatestFont" after EACH loaded font in your initialisation (see example)
-- "notify::render" was renamed to "ImGui::RenderNotifications()"
-- By default, NOTIFY_USE_SEPARATOR is defined which will add a separator (horizontal line) between the title and the content.
-- Now supporting multiline content (1/3 of the total view port width as max-width)
+### Fixed
+- Notifications now render above all other windows
+- Notifications now render in the correct position when the main window is moved
+- Compilation warnings about incorrect usage of ```ImGui::Text()```
+
+### Changed
+- Code readability improved
+- Switched to Font Awesome 6 icons
+- Visual changes to the notifications (can be customized in the ```main.cpp``` file)
+- Default ImGui theme changed to *Embrace The Darkness* by [janekb04](https://github.com/janekb04)
+
+## [FULL CHANGELOG](https://github.com/TyomaVader/ImGuiNotify/blob/Dev/CHANGELOG.md)
 
 ## Usage
 ### Include
 ```c++
-#include "src/imgui_notify.h"
-#include "tahoma.h" // <-- Required font!
+#include "ImGuiNotify.hpp"
+#include "IconsFontAwesome6.h"
 ```
-### Initialisation (after impl call, e.g ImGui_ImplDX12_Init)
+### Initialisation (after impl call: ImGui_ImplDX12_Init, ImGui_ImplVulkan_Init, etc.)
 ```c++
-ImGuiIO* io = &ImGui::GetIO();
+io.Fonts->AddFontDefault();
 
-ImFontConfig font_cfg;
-font_cfg.FontDataOwnedByAtlas = false;
-io->Fonts->AddFontFromMemoryTTF((void*)tahoma, sizeof(tahoma), 17.f, &font_cfg);
+float baseFontSize = 16.0f; // Default font size
+float iconFontSize = baseFontSize * 2.0f / 3.0f; // FontAwesome fonts need to have their sizes reduced by 2.0f/3.0f in order to align correctly
 
-// Initialize notify
-ImGui::MergeIconsWithLatestFont(16.f, false);
+// Check if FONT_ICON_FILE_NAME_FAS is a valid path
+std::ifstream fontAwesomeFile(FONT_ICON_FILE_NAME_FAS);
 
-// If you use multiple fonts, repeat the same thing!
-// io->Fonts->AddFontFromMemoryTTF((void*)another_font, sizeof(another_font), 17.f, &font_cfg);
-// ImGui::MergeIconsWithLatestFont(16.f, false);
+if (!fontAwesomeFile.good())
+{
+    // If it's not good, then we can't find the font and should abort
+    std::cerr << "Could not find the FontAwesome font file." << std::endl;
+    abort();
+}
+
+static const ImWchar icons_ranges[] = {ICON_MIN_FA, ICON_MAX_16_FA, 0};
+ImFontConfig icons_config;
+icons_config.MergeMode = true;
+icons_config.PixelSnapH = true;
+icons_config.GlyphMinAdvanceX = iconFontSize;
+io.Fonts->AddFontFromFileTTF(FONT_ICON_FILE_NAME_FAS, iconFontSize, &icons_config, icons_ranges);
 ```
 ### Create notifications
 ```c++
@@ -57,17 +68,27 @@ ImGui::InsertNotification(toast);
 ```
 ### Rendering
 ```c++
-// Render toasts on top of everything, at the end of your code!
-// You should push style vars here
-ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 5.f); // Round borders
-ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(43.f / 255.f, 43.f / 255.f, 43.f / 255.f, 100.f / 255.f)); // Background color
-ImGui::RenderNotifications(); // <-- Here we render all notifications
-ImGui::PopStyleVar(1); // Don't forget to Pop()
+// Notifications style setup
+ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.f); // Disable round borders
+ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.f); // Disable borders
+
+// Notifications color setup
+ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.10f, 0.10f, 0.10f, 1.00f)); // Background color
+
+
+// Main rendering function
+ImGui::RenderNotifications();
+
+
+//——————————————————————————————— WARNING ———————————————————————————————
+// Argument MUST match the amount of ImGui::PushStyleVar() calls 
+ImGui::PopStyleVar(2);
+// Argument MUST match the amount of ImGui::PushStyleColor() calls 
 ImGui::PopStyleColor(1);
 ```
 
 ## Showcase
-![Showcase](https://i.imgur.com/ckcpOHJ.gif)
+![Showcase](https://s11.gifyu.com/images/Sc3BQ.gif)
 
 ## License
-[![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/patrickcjk/imgui-notify/blob/main/LICENSE)
+[![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/TyomaVader/ImGuiNotify/blob/Dev/LICENSE)
