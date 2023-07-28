@@ -1,4 +1,4 @@
-name: C/C++ CI
+name: Linux build tests
 
 on:
   push:
