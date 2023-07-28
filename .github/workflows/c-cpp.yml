@@ -1,0 +1,22 @@
+name: C/C++ CI
+
+on:
+  push:
+    branches: [ "Dev" ]
+  pull_request:
+    branches: [ "Dev" ]
+
+jobs:
+  Linux:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Install Dependencies
+      run:
+        sudo apt update
+        sudo apt install -y libglfw3-dev libsdl2-dev gcc-multilib g++-multilib libfreetype6-dev libvulkan-dev
+    - name: make
+      run:
+        cd example
+        make
