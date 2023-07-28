@@ -88,7 +88,11 @@ ImGui::PopStyleColor(1);
 ```
 
 ## Showcase
-![Showcase](https://s11.gifyu.com/images/Sc3BQ.gif)
+https://github.com/TyomaVader/ImGuiNotify/assets/67346255/c4d9ee3c-5725-4d8d-89ee-670d9ecd3378
 
 ## License
 [![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/TyomaVader/ImGuiNotify/blob/Dev/LICENSE)
+
+
+
+
