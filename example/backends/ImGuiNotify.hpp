@@ -18,6 +18,10 @@
 #include <string>
 #include <chrono>
 
+#if __cplusplus > 202002L && __cpp_concepts >= 202002L
+#include <expected>
+#endif
+
 #include "imgui.h"
 #include "imgui_internal.h"
 
@@ -39,35 +43,35 @@
 #define NOTIFY_NULL_OR_EMPTY(str)		(!str || !strlen(str))
 #define NOTIFY_FORMAT(fn, format, ...)	if (format) {va_list args; va_start(args, format); fn(format, args, ##__VA_ARGS__); va_end(args);}
 
-enum ImGuiToastType
+enum class ImGuiToastType : uint8_t
 {
-	ImGuiToastType_None,
-	ImGuiToastType_Success,
-	ImGuiToastType_Warning,
-	ImGuiToastType_Error,
-	ImGuiToastType_Info,
-	ImGuiToastType_COUNT
+	None,
+	Success,
+	Warning,
+	Error,
+	Info,
+	COUNT
 };
 
-enum ImGuiToastPhase
+enum class ImGuiToastPhase : uint8_t
 {
-	ImGuiToastPhase_FadeIn,
-	ImGuiToastPhase_Wait,
-	ImGuiToastPhase_FadeOut,
-	ImGuiToastPhase_Expired,
-	ImGuiToastPhase_COUNT
+	FadeIn,
+	Wait,
+	FadeOut,
+	Expired,
+	COUNT
 };
 
-enum ImGuiToastPos
+enum class ImGuiToastPos : uint8_t
 {
-	ImGuiToastPos_TopLeft,
-	ImGuiToastPos_TopCenter,
-	ImGuiToastPos_TopRight,
-	ImGuiToastPos_BottomLeft,
-	ImGuiToastPos_BottomCenter,
-	ImGuiToastPos_BottomRight,
-	ImGuiToastPos_Center,
-	ImGuiToastPos_COUNT
+	TopLeft,
+	TopCenter,
+	TopRight,
+	BottomLeft,
+	BottomCenter,
+	BottomRight,
+	Center,
+	COUNT
 };
 
 /**
@@ -76,7 +80,7 @@ enum ImGuiToastPos
 class ImGuiToast
 {
 private:
-	ImGuiToastType								type = ImGuiToastType_None;
+	ImGuiToastType								type = ImGuiToastType::None;
 	char										title[NOTIFY_MAX_MSG_LENGTH];
 	char										content[NOTIFY_MAX_MSG_LENGTH];
 	int											dismissTime = NOTIFY_DEFAULT_DISMISS;
@@ -85,12 +89,12 @@ private:
 private:
 	// Setters
 
-	inline auto setTitle(const char* format, va_list args)
+	inline void setTitle(const char* format, va_list args)
 	{
 		vsnprintf(this->title, sizeof(this->title), format, args);
 	}
 
-	inline auto setContent(const char* format, va_list args)
+	inline void setContent(const char* format, va_list args)
 	{
 		vsnprintf(this->content, sizeof(this->content), format, args);
 	}
@@ -126,7 +130,7 @@ public:
 	 */
 	inline void setType(const ImGuiToastType& type)
 	{
-		IM_ASSERT(type < ImGuiToastType_COUNT);
+		IM_ASSERT(type < ImGuiToastType::COUNT);
 		this->type = type;
 	};
 
@@ -154,18 +158,18 @@ public:
 		{
 			switch (this->type)
 			{
-			case ImGuiToastType_None:
-				return NULL;
-			case ImGuiToastType_Success:
+			case ImGuiToastType::None:
+				return nullptr;
+			case ImGuiToastType::Success:
 				return "Success";
-			case ImGuiToastType_Warning:
+			case ImGuiToastType::Warning:
 				return "Warning";
-			case ImGuiToastType_Error:
+			case ImGuiToastType::Error:
 				return "Error";
-			case ImGuiToastType_Info:
+			case ImGuiToastType::Info:
 				return "Info";
 			default:
-				return NULL;
+				return nullptr;
 			}
 		}
 
@@ -191,15 +195,15 @@ public:
 	{
 		switch (this->type)
 		{
-		case ImGuiToastType_None:
+		case ImGuiToastType::None:
 			return {255, 255, 255, 255}; // White
-		case ImGuiToastType_Success:
+		case ImGuiToastType::Success:
 			return {0, 255, 0, 255}; // Green
-		case ImGuiToastType_Warning:
+		case ImGuiToastType::Warning:
 			return {255, 255, 0, 255}; // Yellow
-		case ImGuiToastType_Error:
+		case ImGuiToastType::Error:
 			return {255, 0, 0, 255}; // Error
-		case ImGuiToastType_Info:
+		case ImGuiToastType::Info:
 			return {0, 157, 255, 255}; // Blue
 		default:
 			return {255, 255, 255, 255}; // White
@@ -215,18 +219,18 @@ public:
 	{
 		switch (this->type)
 		{
-		case ImGuiToastType_None:
-			return NULL;
-		case ImGuiToastType_Success:
+		case ImGuiToastType::None:
+			return nullptr;
+		case ImGuiToastType::Success:
 			return ICON_FA_CIRCLE_CHECK; // Font Awesome 6
-		case ImGuiToastType_Warning:
+		case ImGuiToastType::Warning:
 			return ICON_FA_TRIANGLE_EXCLAMATION; // Font Awesome 6
-		case ImGuiToastType_Error:
+		case ImGuiToastType::Error:
 			return ICON_FA_CIRCLE_XMARK; // Font Awesome 6
-		case ImGuiToastType_Info:
+		case ImGuiToastType::Info:
 			return ICON_FA_CIRCLE_INFO; // Font Awesome 6
 		default:
-			return NULL;
+			return nullptr;
 		}
 	}
 
@@ -255,10 +259,10 @@ public:
 	 * @brief Get the current phase of the toast notification based on the elapsed time since its creation.
 	 * 
 	 * @return ImGuiToastPhase The current phase of the toast notification.
-	 *         - ImGuiToastPhase_FadeIn: The notification is fading in.
-	 *         - ImGuiToastPhase_Wait: The notification is waiting to be dismissed.
-	 *         - ImGuiToastPhase_FadeOut: The notification is fading out.
-	 *         - ImGuiToastPhase_Expired: The notification has expired and should be removed.
+	 *         - ImGuiToastPhase::FadeIn: The notification is fading in.
+	 *         - ImGuiToastPhase::Wait: The notification is waiting to be dismissed.
+	 *         - ImGuiToastPhase::FadeOut: The notification is fading out.
+	 *         - ImGuiToastPhase::Expired: The notification has expired and should be removed.
 	 */
 	inline ImGuiToastPhase getPhase()
 	{
@@ -266,18 +270,18 @@ public:
 
 		if (elapsed > NOTIFY_FADE_IN_OUT_TIME + this->dismissTime + NOTIFY_FADE_IN_OUT_TIME)
 		{
-			return ImGuiToastPhase_Expired;
+			return ImGuiToastPhase::Expired;
 		} else 
 		if (elapsed > NOTIFY_FADE_IN_OUT_TIME + this->dismissTime)
 		{
-			return ImGuiToastPhase_FadeOut;
+			return ImGuiToastPhase::FadeOut;
 		} else 
 		if (elapsed > NOTIFY_FADE_IN_OUT_TIME)
 		{
-			return ImGuiToastPhase_Wait;
+			return ImGuiToastPhase::Wait;
 		} else
 		{
-			return ImGuiToastPhase_FadeIn;
+			return ImGuiToastPhase::FadeIn;
 		}
 	}
 
@@ -290,11 +294,11 @@ public:
 		const ImGuiToastPhase phase = getPhase();
 		const int64_t elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(getElapsedTime()).count();
 
-		if (phase == ImGuiToastPhase_FadeIn)
+		if (phase == ImGuiToastPhase::FadeIn)
 		{
 			return ((float)elapsed / (float)NOTIFY_FADE_IN_OUT_TIME) * NOTIFY_OPACITY;
 		} else 
-		if (phase == ImGuiToastPhase_FadeOut)
+		if (phase == ImGuiToastPhase::FadeOut)
 		{
 			return (1.f - (((float)elapsed - (float)NOTIFY_FADE_IN_OUT_TIME - (float)this->dismissTime) / (float)NOTIFY_FADE_IN_OUT_TIME)) * NOTIFY_OPACITY;
 		}
@@ -313,7 +317,7 @@ public:
 	 */
 	ImGuiToast(ImGuiToastType type, int dismissTime = NOTIFY_DEFAULT_DISMISS)
 	{
-		IM_ASSERT(type < ImGuiToastType_COUNT);
+		IM_ASSERT(type < ImGuiToastType::COUNT);
 
 		this->type = type;
 		this->dismissTime = dismissTime;
@@ -389,7 +393,7 @@ namespace ImGui
 			ImGuiToast* currentToast = &notifications[i];
 
 			// Remove toast if expired
-			if (currentToast->getPhase() == ImGuiToastPhase_Expired)
+			if (currentToast->getPhase() == ImGuiToastPhase::Expired)
 			{
 				RemoveNotification(i);
 				continue;
@@ -399,7 +403,7 @@ namespace ImGui
 			const char* icon = currentToast->getIcon();
 			const char* title = currentToast->getTitle();
 			const char* content = currentToast->getContent();
-			const char* default_title = currentToast->getDefaultTitle();
+			const char* defaultTitle = currentToast->getDefaultTitle();
 			const float opacity = currentToast->getFadePercent(); // Get opacity based of the current phase
 
 			// Window rendering
@@ -423,7 +427,7 @@ namespace ImGui
 			ImVec2 mainWindowPos = GetMainViewport()->Pos;
 			SetNextWindowPos(ImVec2(mainWindowPos.x + mainWindowSize.x - NOTIFY_PADDING_X, mainWindowPos.y + mainWindowSize.y - NOTIFY_PADDING_Y - height), ImGuiCond_Always, ImVec2(1.0f, 1.0f));
 
-			Begin(windowName, NULL, NOTIFY_TOAST_FLAGS);
+			Begin(windowName, nullptr, NOTIFY_TOAST_FLAGS);
 
 			// Render over all other windows
 			BringWindowToDisplayFront(GetCurrentWindow());
@@ -452,12 +456,12 @@ namespace ImGui
 					Text("%s", title); // Render title text
 					wasTitleRendered = true;
 				} else 
-				if (!NOTIFY_NULL_OR_EMPTY(default_title))
+				if (!NOTIFY_NULL_OR_EMPTY(defaultTitle))
 				{
 					if (!NOTIFY_NULL_OR_EMPTY(icon))
 						SameLine();
 
-					Text("%s", default_title); // Render default title text (ImGuiToastType_Success -> "Success", etc...)
+					Text("%s", defaultTitle); // Render default title text (ImGuiToastType_Success -> "Success", etc...)
 					wasTitleRendered = true;
 				}
 
@@ -489,23 +493,6 @@ namespace ImGui
 			// End
 			End();
 		}
-	}
-
-	/**
-	 * Merges icons with the latest font.
-	 * @param fontSize The size of the font.
-	 * @param FontDataOwnedByAtlas Whether the font data is owned by the atlas.
-	 */
-	inline void MergeIconsWithLatestFont(float fontSize, bool FontDataOwnedByAtlas = false)
-	{
-		static const ImWchar icons_ranges[] = {ICON_MIN_FA, ICON_MAX_FA, 0};
-
-		ImFontConfig iconsConfig;
-		iconsConfig.MergeMode = true;
-		iconsConfig.PixelSnapH = true;
-		iconsConfig.FontDataOwnedByAtlas = FontDataOwnedByAtlas;
-
-		GetIO().Fonts->AddFontFromMemoryTTF((void*)fa_solid_900, sizeof(fa_solid_900), fontSize, &iconsConfig, icons_ranges);
 	}
 }
 

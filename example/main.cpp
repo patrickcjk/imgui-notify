@@ -225,25 +225,17 @@ static void SetupVulkan(ImVector<const char*> instance_extensions)
     }
 
     // Create Descriptor Pool
+    // The example only requires a single combined image sampler descriptor for the font image and only uses one descriptor set (for that)
+    // If you wish to load e.g. additional textures you may need to alter pools sizes.
     {
         VkDescriptorPoolSize pool_sizes[] =
         {
-            { VK_DESCRIPTOR_TYPE_SAMPLER, 1000 },
-            { VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1000 },
-            { VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, 1000 },
-            { VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, 1000 },
-            { VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER, 1000 },
-            { VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER, 1000 },
-            { VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1000 },
-            { VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1000 },
-            { VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 1000 },
-            { VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC, 1000 },
-            { VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT, 1000 }
+            { VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1 },
         };
         VkDescriptorPoolCreateInfo pool_info = {};
         pool_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
         pool_info.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
-        pool_info.maxSets = 1000 * IM_ARRAYSIZE(pool_sizes);
+        pool_info.maxSets = 1;
         pool_info.poolSizeCount = (uint32_t)IM_ARRAYSIZE(pool_sizes);
         pool_info.pPoolSizes = pool_sizes;
         err = vkCreateDescriptorPool(g_Device, &pool_info, g_Allocator, &g_DescriptorPool);
@@ -691,31 +683,31 @@ int main(int, char**)
 	    {
 	    	if (ImGui::Button("Success"))
 	    	{
-	    		ImGui::InsertNotification({ImGuiToastType_Success, 3000, "That is a success! %s", "(Format here)"});
+	    		ImGui::InsertNotification({ImGuiToastType::Success, 3000, "That is a success! %s", "(Format here)"});
 	    	}
 
 	    	ImGui::SameLine();
 	    	if (ImGui::Button("Warning"))
 	    	{
-	    		ImGui::InsertNotification({ImGuiToastType_Warning, 3000, "This is a warning!"});
+	    		ImGui::InsertNotification({ImGuiToastType::Warning, 3000, "This is a warning!"});
 	    	}
 
 	    	ImGui::SameLine();
 	    	if (ImGui::Button("Error"))
 	    	{
-	    		ImGui::InsertNotification({ImGuiToastType_Error, 3000, "Segmentation fault"});
+	    		ImGui::InsertNotification({ImGuiToastType::Error, 3000, "Segmentation fault"});
 	    	}
 
 	    	ImGui::SameLine();
 	    	if (ImGui::Button("Info"))
 	    	{
-	    		ImGui::InsertNotification({ImGuiToastType_Info, 3000, "Info about ImGui..."});
+	    		ImGui::InsertNotification({ImGuiToastType::Info, 3000, "Info about ImGui..."});
 	    	}
 
 	    	ImGui::SameLine();
 	    	if (ImGui::Button("Info long"))
 	    	{
-	    		ImGui::InsertNotification({ImGuiToastType_Info, 3000, "Hi, I'm a long notification. I'm here to show you that you can write a lot of text in me. I'm also here to show you that I can wrap text, so you don't have to worry about that."});
+	    		ImGui::InsertNotification({ImGuiToastType::Info, 3000, "Hi, I'm a long notification. I'm here to show you that you can write a lot of text in me. I'm also here to show you that I can wrap text, so you don't have to worry about that."});
 	    	}
 	    }
 
@@ -732,20 +724,24 @@ int main(int, char**)
 	    	if (duration < 0) duration = 0; // Shouldn't be negative
 
 	    	static const char* type_str[] = { "None", "Success", "Warning", "Error", "Info" };
-	    	static ImGuiToastType type = ImGuiToastType_Success;
-	    	IM_ASSERT(type < ImGuiToastType_COUNT);
+	    	static ImGuiToastType type = ImGuiToastType::Success;
+	    	IM_ASSERT(type < ImGuiToastType::COUNT);
 
-	    	if (ImGui::BeginCombo("Type", type_str[type]))
+	    	if (ImGui::BeginCombo("Type", type_str[(uint8_t)type]))
 	    	{
 	    		for (auto n = 0; n < IM_ARRAYSIZE(type_str); n++)
 	    		{
-	    			const bool is_selected = (type == n);
+	    			const bool isSelected = ((uint8_t)type == n);
 
-	    			if (ImGui::Selectable(type_str[n], is_selected))
-	    				type = (ImGuiToastType)n;
+	    			if (ImGui::Selectable(type_str[n], isSelected))
+                    {
+                        type = (ImGuiToastType)n;
+                    }
 
-	    			if (is_selected)
-	    				ImGui::SetItemDefaultFocus();
+	    			if (isSelected)
+                    {
+                        ImGui::SetItemDefaultFocus();
+                    }
 	    		}
 
 	    		ImGui::EndCombo();
