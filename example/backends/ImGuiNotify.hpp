@@ -28,6 +28,18 @@
 #include "IconsFontAwesome6.h"
 #include "fa_solid_900.h"
 
+
+
+
+
+
+
+
+
+/**
+ * CONFIGURATION SECTION Start
+*/
+
 #define NOTIFY_MAX_MSG_LENGTH			4096		// Max message content length
 #define NOTIFY_PADDING_X				20.f		// Bottom-left X padding
 #define NOTIFY_PADDING_Y				20.f		// Bottom-left Y padding
@@ -35,10 +47,22 @@
 #define NOTIFY_FADE_IN_OUT_TIME			150			// Fade in and out duration
 #define NOTIFY_DEFAULT_DISMISS			3000		// Auto dismiss after X ms (default, applied only of no data provided in constructors)
 #define NOTIFY_OPACITY					0.8f		// 0-1 Toast opacity
-#define NOTIFY_TOAST_FLAGS				ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoFocusOnAppearing
+#define NOTIFY_USE_SEPARATOR 			false 		// If true, a separator will be rendered between the title and the content
+#define NOTIFY_USE_DISMISS_BUTTON		true		// If true, a dismiss button will be rendered in the top right corner of the toast
 
-// Set to true if you want to use separator between title and content
-#define NOTIFY_USE_SEPARATOR 			false
+
+/**
+ * CONFIGURATION SECTION End
+*/
+
+
+
+
+
+
+
+
+static ImGuiWindowFlags NOTIFY_TOAST_FLAGS	=	ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoFocusOnAppearing;
 
 #define NOTIFY_NULL_OR_EMPTY(str)		(!str || !strlen(str))
 #define NOTIFY_FORMAT(fn, format, ...)	if (format) {va_list args; va_start(args, format); fn(format, args, ##__VA_ARGS__); va_end(args);}
@@ -226,7 +250,7 @@ public:
 		case ImGuiToastType::Warning:
 			return ICON_FA_TRIANGLE_EXCLAMATION; // Font Awesome 6
 		case ImGuiToastType::Error:
-			return ICON_FA_CIRCLE_XMARK; // Font Awesome 6
+			return ICON_FA_CIRCLE_EXCLAMATION; // Font Awesome 6
 		case ImGuiToastType::Info:
 			return ICON_FA_CIRCLE_INFO; // Font Awesome 6
 		default:
@@ -427,6 +451,11 @@ namespace ImGui
 			ImVec2 mainWindowPos = GetMainViewport()->Pos;
 			SetNextWindowPos(ImVec2(mainWindowPos.x + mainWindowSize.x - NOTIFY_PADDING_X, mainWindowPos.y + mainWindowSize.y - NOTIFY_PADDING_Y - height), ImGuiCond_Always, ImVec2(1.0f, 1.0f));
 
+			if (!NOTIFY_USE_DISMISS_BUTTON)
+			{
+				NOTIFY_TOAST_FLAGS |= ImGuiWindowFlags_NoInputs;
+			}
+
 			Begin(windowName, nullptr, NOTIFY_TOAST_FLAGS);
 
 			// Render over all other windows
@@ -463,6 +492,33 @@ namespace ImGui
 
 					Text("%s", defaultTitle); // Render default title text (ImGuiToastType_Success -> "Success", etc...)
 					wasTitleRendered = true;
+				}
+
+				// If a dismiss button is enabled
+				if (NOTIFY_USE_DISMISS_BUTTON)
+				{
+					// If a title or content is set, we want to render the button on the same line
+					if (wasTitleRendered || !NOTIFY_NULL_OR_EMPTY(content))
+					{
+						SameLine();
+					}
+
+					// Render the dismiss button on the top right corner
+					// NEEDS TO BE REWORKED
+					float scale = 0.8f;
+
+					if (CalcTextSize(content).x > GetWindowContentRegionMax().x)
+					{
+						scale = 0.95f;
+					}
+
+					SetCursorPosX(GetCursorPosX() + (GetWindowSize().x - GetCursorPosX()) * scale);
+
+					// If the button is pressed, we want to remove the notification
+					if (Button(ICON_FA_XMARK))
+					{
+						RemoveNotification(i);
+					}
 				}
 
 				// In case ANYTHING was rendered in the top, we want to add a small padding so the text (or icon) looks centered vertically

@@ -3,6 +3,8 @@
 ## Pre-Realease
 - Switched from classic enums to scoped enums
 - Upgraded Dear ImGui version used in example to [v1.89.9 WIP](https://github.com/ocornut/imgui/commit/11613013860d149667302a258041dcd832069f36)
+- Added CMake support, see CMakeLists.txt for details
+- Optional dismiss button for notifications added
 
 ## [0.0.1] - 28.07.2023
 
