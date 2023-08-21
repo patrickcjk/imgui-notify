@@ -3,8 +3,26 @@
 // for use with https://github.com/FortAwesome/Font-Awesome/blob/6.x/webfonts/fa-regular-400.ttf, https://github.com/FortAwesome/Font-Awesome/blob/6.x/webfonts/fa-solid-900.ttf
 #pragma once
 
-#define FONT_ICON_FILE_NAME_FAR "./fonts/fa-regular-400.ttf"
-#define FONT_ICON_FILE_NAME_FAS "./fonts/fa-solid-900.ttf"
+/**
+ * WARNING
+ * 
+ * If used with cmake, replace the following lines:
+ * 
+ * #define FONT_ICON_FILE_NAME_FAR "./fonts/fa-regular-400.ttf"
+ * #define FONT_ICON_FILE_NAME_FAS "./fonts/fa-solid-900.ttf"
+ * 
+ * with:
+ * 
+ * #define FONT_ICON_FILE_NAME_FAR "../fonts/fa-regular-400.ttf"
+ * #define FONT_ICON_FILE_NAME_FAS "../fonts/fa-solid-900.ttf"
+*/
+
+#define FONT_ICON_FILE_NAME_FAR "../fonts/fa-regular-400.ttf"
+#define FONT_ICON_FILE_NAME_FAS "../fonts/fa-solid-900.ttf"
+
+
+
+
 
 #define ICON_MIN_FA 0xe005
 #define ICON_MAX_16_FA 0xf8ff

@@ -12,3 +12,5 @@ ImZoomSlider.h
 *.o
 imgui.ini
 .vscode
+build
+test
