@@ -7,6 +7,7 @@
 #pragma once
 #include <vector>
 #include <string>
+#include <chrono>
 #include "font_awesome_5.h"
 #include "fa_solid_900.h"
 
@@ -89,7 +90,7 @@ public:
 
 	NOTIFY_INLINE auto get_title() -> char* { return this->title; };
 
-	NOTIFY_INLINE auto get_default_title() -> char*
+	NOTIFY_INLINE auto get_default_title() -> const char*
 	{
 		if (!strlen(this->title))
 		{
@@ -149,7 +150,7 @@ public:
 
 	NOTIFY_INLINE auto get_content() -> char* { return this->content; };
 
-	NOTIFY_INLINE auto get_elapsed_time() { return GetTickCount64() - this->creation_time; }
+	NOTIFY_INLINE auto get_elapsed_time() { return get_tick_count() - this->creation_time; }
 
 	NOTIFY_INLINE auto get_phase() -> const ImGuiToastPhase&
 	{
@@ -188,6 +189,12 @@ public:
 		}
 
 		return 1.f * NOTIFY_OPACITY;
+	}
+
+	NOTIFY_INLINE static auto get_tick_count() -> const unsigned long long
+	{
+		using namespace std::chrono;
+		return duration_cast<milliseconds>(steady_clock::now().time_since_epoch()).count();
 	}
 
 public:
