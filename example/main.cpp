@@ -35,6 +35,8 @@
 // #pragma comment(lib, "legacy_stdio_definitions")
 // #endif
 
+#define _DEBUG false
+
 //#define IMGUI_UNLIMITED_FRAME_RATE
 #ifdef _DEBUG
 #define IMGUI_VULKAN_DEBUG_REPORT
@@ -61,6 +63,7 @@ static void glfw_error_callback(int error, const char* description)
 {
     fprintf(stderr, "GLFW Error %d: %s\n", error, description);
 }
+
 static void check_vk_result(VkResult err)
 {
     if (err == 0)
@@ -709,6 +712,12 @@ int main(int, char**)
 	    	{
 	    		ImGui::InsertNotification({ImGuiToastType::Info, 3000, "Hi, I'm a long notification. I'm here to show you that you can write a lot of text in me. I'm also here to show you that I can wrap text, so you don't have to worry about that."});
 	    	}
+
+            ImGui::SameLine();
+            if (ImGui::Button("Notify with button"))
+            {
+                ImGui::InsertNotification({ImGuiToastType::Error, 3000, "Click me!", []() { ImGui::InsertNotification({ImGuiToastType::Success, 3000, "Thanks for clicking!"}); }, "Notification content"});
+            }
 	    }
 
 	    if (ImGui::CollapsingHeader("Do it yourself", ImGuiTreeNodeFlags_DefaultOpen))
@@ -781,6 +790,9 @@ int main(int, char**)
 
 
         // YOUR CODE GOES HERE
+        #if _DEBUG
+            ImGui::ShowStackToolWindow();
+        #endif
 
 
 

@@ -17,10 +17,7 @@
 #include <vector>
 #include <string>
 #include <chrono>
-
-#if __cplusplus > 202002L && __cpp_concepts >= 202002L
-#include <expected>
-#endif
+#include <functional>
 
 #include "imgui.h"
 #include "imgui_internal.h"
@@ -62,7 +59,7 @@
 
 
 
-static ImGuiWindowFlags NOTIFY_TOAST_FLAGS	=	ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoFocusOnAppearing;
+static const ImGuiWindowFlags NOTIFY_DEFAULT_TOAST_FLAGS = ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoFocusOnAppearing;
 
 #define NOTIFY_NULL_OR_EMPTY(str)		(!str || !strlen(str))
 #define NOTIFY_FORMAT(fn, format, ...)	if (format) {va_list args; va_start(args, format); fn(format, args, ##__VA_ARGS__); va_end(args);}
@@ -104,11 +101,17 @@ enum class ImGuiToastPos : uint8_t
 class ImGuiToast
 {
 private:
+	ImGuiWindowFlags							flags = NOTIFY_DEFAULT_TOAST_FLAGS;
+
 	ImGuiToastType								type = ImGuiToastType::None;
 	char										title[NOTIFY_MAX_MSG_LENGTH];
 	char										content[NOTIFY_MAX_MSG_LENGTH];
+
 	int											dismissTime = NOTIFY_DEFAULT_DISMISS;
 	std::chrono::system_clock::time_point		creationTime = std::chrono::system_clock::now();
+
+	std::function<void()>						onButtonPress = nullptr; // A lambda variable, which will be executed when button in notification is pressed
+	char 										buttonLabel[NOTIFY_MAX_MSG_LENGTH];
 
 private:
 	// Setters
@@ -121,6 +124,11 @@ private:
 	inline void setContent(const char* format, va_list args)
 	{
 		vsnprintf(this->content, sizeof(this->content), format, args);
+	}
+
+	inline void setButtonLabel(const char* format, va_list args)
+	{
+		vsnprintf(this->buttonLabel, sizeof(this->buttonLabel), format, args);
 	}
 
 public:
@@ -157,6 +165,21 @@ public:
 		IM_ASSERT(type < ImGuiToastType::COUNT);
 		this->type = type;
 	};
+
+	inline void setWindowFlags(const ImGuiWindowFlags& flags)
+	{
+		this->flags = flags;
+	}
+
+	inline void setOnButtonPress(const std::function<void()>& onButtonPress)
+	{
+		this->onButtonPress = onButtonPress;
+	}
+
+	inline void setButtonLabel(const char* format, ...)
+	{
+		NOTIFY_FORMAT(this->setButtonLabel, format);
+	}
 
 public:
 	// Getters
@@ -330,6 +353,21 @@ public:
 		return 1.f * NOTIFY_OPACITY;
 	}
 
+	inline ImGuiWindowFlags getWindowFlags()
+	{
+		return this->flags;
+	}
+
+	inline std::function<void()> getOnButtonPress()
+	{
+		return this->onButtonPress;
+	}
+
+	inline const char* getButtonLabel()
+	{
+		return this->buttonLabel;
+	}
+
 public:
 	// Constructors
 
@@ -357,6 +395,7 @@ public:
 	 * 
 	 * @param type The type of the toast message.
 	 * @param format The format string for the message.
+	 * @param ... The variable arguments to be formatted according to the format string.
 	 */
 	ImGuiToast(ImGuiToastType type, const char* format, ...) : ImGuiToast(type)
 	{
@@ -374,6 +413,24 @@ public:
 	ImGuiToast(ImGuiToastType type, int dismissTime, const char* format, ...) : ImGuiToast(type, dismissTime)
 	{
 		NOTIFY_FORMAT(this->setContent, format);
+	}
+
+	/**
+	 * @brief Constructor for creating a new ImGuiToast object with a specified type, dismiss time, title format, content format and a button.
+	 * 
+	 * @param type The type of the toast message.
+	 * @param dismissTime The time in milliseconds before the toast message is dismissed.
+	 * @param buttonLabel The label for the button.
+	 * @param onButtonPress The lambda function to be executed when the button is pressed.
+	 * @param format The format string for the content of the toast message.
+	 * @param ... The variable arguments to be formatted according to the format string.
+	 */
+	ImGuiToast(ImGuiToastType type, int dismissTime, const char* buttonLabel, const std::function<void()>& onButtonPress, const char* format, ...) : ImGuiToast(type, dismissTime)
+	{
+		NOTIFY_FORMAT(this->setContent, format);
+
+		this->onButtonPress = onButtonPress;
+		this->setButtonLabel(buttonLabel);
 	}
 };
 
@@ -451,12 +508,13 @@ namespace ImGui
 			ImVec2 mainWindowPos = GetMainViewport()->Pos;
 			SetNextWindowPos(ImVec2(mainWindowPos.x + mainWindowSize.x - NOTIFY_PADDING_X, mainWindowPos.y + mainWindowSize.y - NOTIFY_PADDING_Y - height), ImGuiCond_Always, ImVec2(1.0f, 1.0f));
 
-			if (!NOTIFY_USE_DISMISS_BUTTON)
+			// Set notification window flags
+			if (!NOTIFY_USE_DISMISS_BUTTON && currentToast->getOnButtonPress() == nullptr)
 			{
-				NOTIFY_TOAST_FLAGS |= ImGuiWindowFlags_NoInputs;
+				currentToast->setWindowFlags(NOTIFY_DEFAULT_TOAST_FLAGS | ImGuiWindowFlags_NoInputs);
 			}
 
-			Begin(windowName, nullptr, NOTIFY_TOAST_FLAGS);
+			Begin(windowName, nullptr, currentToast->getWindowFlags());
 
 			// Render over all other windows
 			BringWindowToDisplayFront(GetCurrentWindow());
@@ -538,6 +596,16 @@ namespace ImGui
 					}
 
 					Text("%s", content); // Render content text
+				}
+
+				// If a button is set
+				if (currentToast->getOnButtonPress() != nullptr)
+				{
+					// If the button is pressed, we want to execute the lambda function
+					if (Button(currentToast->getButtonLabel()))
+					{
+						currentToast->getOnButtonPress()();
+					}
 				}
 
 				PopTextWrapPos();
