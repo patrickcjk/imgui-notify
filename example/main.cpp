@@ -716,7 +716,7 @@ int main(int, char**)
             ImGui::SameLine();
             if (ImGui::Button("Notify with button"))
             {
-                ImGui::InsertNotification({ImGuiToastType::Error, 3000, "Click me!", []() { ImGui::InsertNotification({ImGuiToastType::Success, 3000, "Thanks for clicking!"}); }, "Notification content"});
+                ImGui::InsertNotification({ImGuiToastType::Error, 3000, "Click me!", [](){ImGui::InsertNotification({ImGuiToastType::Success, 3000, "Thanks for clicking!"});}, "Notification content"});
             }
 	    }
 

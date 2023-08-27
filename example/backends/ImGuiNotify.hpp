@@ -14,10 +14,10 @@
 
 #pragma once
 
-#include <vector>
+#include <vector>			// Vector for storing notifications list
 #include <string>
-#include <chrono>
-#include <functional>
+#include <chrono>			// For the notifications timed dissmiss
+#include <functional>		// For storing the code, which executest on the button click in the notification
 
 #include "imgui.h"
 #include "imgui_internal.h"
@@ -166,16 +166,32 @@ public:
 		this->type = type;
 	};
 
+	/**
+	 * @brief Set the ImGui window flags for the notification.
+	 * 
+	 * @param flags ImGui window flags to set.
+	*/
 	inline void setWindowFlags(const ImGuiWindowFlags& flags)
 	{
 		this->flags = flags;
 	}
 
+	/**
+	 * @brief Set the function to run on the button click in the notification.
+	 * 
+	 * @param onButtonPress std::fuction or lambda expression, which contains the code for execution.
+	*/
 	inline void setOnButtonPress(const std::function<void()>& onButtonPress)
 	{
 		this->onButtonPress = onButtonPress;
 	}
 
+	/**
+	 * @brief Set the label for the button in the notification.
+	 * 
+	 * @param format The format string for the label.
+	 * @param ... The arguments for the format string.
+	*/
 	inline void setButtonLabel(const char* format, ...)
 	{
 		NOTIFY_FORMAT(this->setButtonLabel, format);
@@ -353,16 +369,25 @@ public:
 		return 1.f * NOTIFY_OPACITY;
 	}
 
+	/**
+	 * @return ImGui window flags for the notification.
+	*/
 	inline ImGuiWindowFlags getWindowFlags()
 	{
 		return this->flags;
 	}
 
+	/**
+	 * @return The function, which is executed on the button click in the notification.
+	*/
 	inline std::function<void()> getOnButtonPress()
 	{
 		return this->onButtonPress;
 	}
 
+	/**
+	 * @return The label on the button in notification.
+	*/
 	inline const char* getButtonLabel()
 	{
 		return this->buttonLabel;

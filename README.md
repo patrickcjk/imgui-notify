@@ -52,18 +52,43 @@ icons_config.GlyphMinAdvanceX = iconFontSize;
 io.Fonts->AddFontFromFileTTF(FONT_ICON_FILE_NAME_FAS, iconFontSize, &icons_config, icons_ranges);
 ```
 ### Create notifications
+- Success
 ```c++
-// A few examples... (no title provided, default one used!)
-ImGui::InsertNotification({ ImGuiToastType_Success, 3000, "Hello World! This is a success! %s", "We can also format here:)" });
-ImGui::InsertNotification({ ImGuiToastType_Warning, 3000, "Hello World! This is a warning! %d", 0x1337 });
-ImGui::InsertNotification({ ImGuiToastType_Error, 3000, "Hello World! This is an error! 0x%X", 0xDEADBEEF });
-ImGui::InsertNotification({ ImGuiToastType_Info, 3000, "Hello World! This is an info!" });
-ImGui::InsertNotification({ ImGuiToastType_Info, 3000, "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation" });
+ImGui::InsertNotification({ImGuiToastType::Success, 3000, "That is a success! %s", "(Format here)"});
+```
 
-// Now using a custom title...
+- Warning
+```c++
+ImGui::InsertNotification({ImGuiToastType::Warning, 3000, "Hello World! This is a warning! %d", 0x1337});
+```
+
+- Error
+```c++
+ImGui::InsertNotification({ImGuiToastType::Error, 3000, "Hello World! This is an error! 0x%X", 0xDEADBEEF});
+```
+
+- Info
+```c++
+ImGui::InsertNotification({ImGuiToastType::Info, 3000, "Hello World! This is an info!"});
+```
+
+- Long info
+```c++
+ImGui::InsertNotification({ImGuiToastType::Info, 3000, "Hi, I'm a long notification. I'm here to show you that you can write a lot of text in me. I'm also here to show you that I can wrap text, so you don't have to worry about that."});
+```
+
+- Error with button
+```c++
+ImGui::InsertNotification({ImGuiToastType::Error, 3000, "Click me!", [](){ImGui::InsertNotification({ImGuiToastType::Success, 3000, "Thanks for clicking!"});}, "Notification content"});
+```
+
+
+
+- Now using a custom title...
+```c++
 ImGuiToast toast(ImGuiToastType_Success, 3000); // <-- content can also be passed here as above
-toast.set_title("This is a %s title", "wonderful");
-toast.set_content("Lorem ipsum dolor sit amet");
+toast.setTitle("This is a %s title", "wonderful");
+toast.setContent("Lorem ipsum dolor sit amet");
 ImGui::InsertNotification(toast);
 ```
 ### Rendering
