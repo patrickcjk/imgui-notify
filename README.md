@@ -56,41 +56,48 @@ io.Fonts->AddFontFromFileTTF(FONT_ICON_FILE_NAME_FAS, iconFontSize, &icons_confi
 ```c++
 ImGui::InsertNotification({ImGuiToastType::Success, 3000, "That is a success! %s", "(Format here)"});
 ```
+![success](https://github.com/TyomaVader/ImGuiNotify/assets/67346255/1d4768d0-a20a-45c3-a939-c6aeb21bbfa8)
+
 
 - Warning
 ```c++
 ImGui::InsertNotification({ImGuiToastType::Warning, 3000, "Hello World! This is a warning! %d", 0x1337});
 ```
+![warning](https://github.com/TyomaVader/ImGuiNotify/assets/67346255/99f84318-b2d9-4e7e-a584-68bef49cf095)
 
 - Error
 ```c++
 ImGui::InsertNotification({ImGuiToastType::Error, 3000, "Hello World! This is an error! 0x%X", 0xDEADBEEF});
 ```
+![error](https://github.com/TyomaVader/ImGuiNotify/assets/67346255/d777ecba-bfc1-42a6-ac6e-2601396045eb)
 
 - Info
 ```c++
 ImGui::InsertNotification({ImGuiToastType::Info, 3000, "Hello World! This is an info!"});
 ```
+![info](https://github.com/TyomaVader/ImGuiNotify/assets/67346255/cd3660cc-d264-43dd-b994-09c084873c20)
 
 - Long info
 ```c++
 ImGui::InsertNotification({ImGuiToastType::Info, 3000, "Hi, I'm a long notification. I'm here to show you that you can write a lot of text in me. I'm also here to show you that I can wrap text, so you don't have to worry about that."});
 ```
+![longInfo](https://github.com/TyomaVader/ImGuiNotify/assets/67346255/52819d26-5b2b-49e9-abca-293d70927b77)
 
 - Error with button
 ```c++
 ImGui::InsertNotification({ImGuiToastType::Error, 3000, "Click me!", [](){ImGui::InsertNotification({ImGuiToastType::Success, 3000, "Thanks for clicking!"});}, "Notification content"});
 ```
-
-
+![withButton](https://github.com/TyomaVader/ImGuiNotify/assets/67346255/a9e85d75-9a10-4b31-935f-bcc7785d196d)
 
 - Now using a custom title...
 ```c++
-ImGuiToast toast(ImGuiToastType_Success, 3000); // <-- content can also be passed here as above
+ImGuiToast toast(ImGuiToastType::Success, 3000); // <-- content can also be passed here as above
 toast.setTitle("This is a %s title", "wonderful");
 toast.setContent("Lorem ipsum dolor sit amet");
 ImGui::InsertNotification(toast);
 ```
+![customTitle](https://github.com/TyomaVader/ImGuiNotify/assets/67346255/b77a6f45-1cb4-4a22-9ff9-41736e56afe4)
+
 ### Rendering
 ```c++
 // Notifications style setup
