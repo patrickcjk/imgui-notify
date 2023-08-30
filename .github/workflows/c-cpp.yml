@@ -2,9 +2,9 @@ name: Linux build tests
 
 on:
   push:
-    branches: [ "Dev" ]
+    branches: [ "Dev", "WindowsGitHubActions" ]
   pull_request:
-    branches: [ "Dev" ]
+    branches: [ "Dev", "WindowsGitHubActions" ]
 
 jobs:
   Linux:
