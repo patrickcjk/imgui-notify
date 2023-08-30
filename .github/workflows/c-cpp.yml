@@ -39,6 +39,6 @@ jobs:
     - name: Build
       shell: powershell
       run: |
-      ls
-      cd win32Example
-      cmake --build . --config $BUILD_TYPE --target test
+        ls
+        cd win32Example
+        cmake --build . --config $BUILD_TYPE --target test
