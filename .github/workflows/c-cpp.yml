@@ -35,10 +35,10 @@ jobs:
       run: |
         ls
         cd win32Example
-        cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON
+        cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=Release -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON
     - name: Build
       shell: powershell
       run: |
         ls
         cd win32Example
-        cmake --build . --config $BUILD_TYPE --target test
+        cmake --build . --config Release --target test
