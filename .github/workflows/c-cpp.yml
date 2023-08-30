@@ -37,7 +37,8 @@ jobs:
         cd win32Example
         cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON
     - name: Build
-      working-directory: ${{github.workspace}}/win32Example/build
       shell: powershell
-      # Execute the build.  You can specify a specific target with "--target <NAME>"
-      run: cmake --build . --config $BUILD_TYPE --target test
+      run: |
+      ls
+      cd win32Example
+      cmake --build . --config $BUILD_TYPE --target test
