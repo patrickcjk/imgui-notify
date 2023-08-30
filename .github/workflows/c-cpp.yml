@@ -20,3 +20,23 @@ jobs:
       run: |
         cd example
         make
+
+  Windows:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - uses: lukka/get-cmake@latest
+    - name: Create Build Environment
+      shell: powershell
+      run: cmake -E make_directory ${{github.workspace}}/win32Example/build
+    - name: Configure CMake
+      shell: powershell
+      run: |
+        cd win32Example
+        cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=Release -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON
+    - name: Build
+      shell: powershell
+      run: |
+        cd win32Example
+        cmake --build . --config Release --target test
