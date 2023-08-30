@@ -3,8 +3,13 @@ Is a header-only wrapper made to create notifications with [Dear ImGui](https://
 
 Requires [Font Awesome 6](https://fontawesome.com/) for icons ([Setup example](https://github.com/juliettef/IconFontCppHeaders)).
 
-## Latest changes (v0.0.1)
+## Latest changes (v0.0.1 & v0.0.2)
 ### Added
+- CMake support, see CMakeLists.txt for details
+- Dismiss button for notifications (optional)
+- Optional button in the notification that executes a user-defined function
+- GitHub Actions for Linux and Windows builds
+- Documentation examples
 - Linux support
 - Documentation
 
@@ -12,12 +17,15 @@ Requires [Font Awesome 6](https://fontawesome.com/) for icons ([Setup example](h
 - Notifications now render above all other windows
 - Notifications now render in the correct position when the main window is moved
 - Compilation warnings about incorrect usage of ```ImGui::Text()```
+- Documentation fixes
 
 ### Changed
 - Code readability improved
 - Switched to Font Awesome 6 icons
 - Visual changes to the notifications (can be customized in the ```main.cpp``` file)
-- Default ImGui theme changed to *Embrace The Darkness* by [janekb04](https://github.com/janekb04)
+- Default Dear ImGui theme changed to *Embrace The Darkness* by [janekb04](https://github.com/janekb04)
+- Switched from classic enums to scoped enums
+- Upgraded Dear ImGui version used in example to [v1.89.9 WIP](https://github.com/ocornut/imgui/commit/11613013860d149667302a258041dcd832069f36)
 
 ## [FULL CHANGELOG](https://github.com/TyomaVader/ImGuiNotify/blob/Dev/CHANGELOG.md)
 
@@ -51,6 +59,8 @@ iconsConfig.PixelSnapH = true;
 iconsConfig.GlyphMinAdvanceX = iconFontSize;
 io.Fonts->AddFontFromFileTTF(FONT_ICON_FILE_NAME_FAS, iconFontSize, &iconsConfig, iconsRanges);
 ```
+> **Warning**
+> FONT_ICON_FILE_NAME_FAS may require a different path depending on your project structure, see ```IconsFontAwesome6.h``` for details. Incorrect path will result in a runtime error.
 ### Create notifications
 - Success
 ```c++

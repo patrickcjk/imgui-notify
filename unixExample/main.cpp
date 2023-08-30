@@ -591,7 +591,7 @@ int main(int, char**)
     if (!fontAwesomeFile.good())
     {
         // If it's not good, then we can't find the font and should abort
-        std::cerr << "Could not find the FontAwesome font file." << std::endl;
+        std::cerr << "Could not find the FontAwesome font file." << std::endl; // WARNING: Check the path in the IconsFontAwesome6.h
         abort();
     }
 

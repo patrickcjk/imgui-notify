@@ -1,13 +1,20 @@
 # Changelog
 
-## Pre-Realease
+## [0.0.2] - 30.08.2023
+
+### Added
+- CMake support, see CMakeLists.txt for details
+- Dismiss button for notifications (optional)
+- Optional button in the notification that executes a user-defined function
+- GitHub Actions for Linux and Windows builds
+- Documentation examples
+
+### Fixed
+- Documentation fixes
+
+### Changed
 - Switched from classic enums to scoped enums
 - Upgraded Dear ImGui version used in example to [v1.89.9 WIP](https://github.com/ocornut/imgui/commit/11613013860d149667302a258041dcd832069f36)
-- Added CMake support, see CMakeLists.txt for details
-- Optional dismiss button for notifications added
-- Added an optional button to the notification that executes a user-defined function
-- Documentation fixes and examples
-- GitHub Actions for Linux and Windows builds configured
 
 ## [0.0.1] - 28.07.2023
 
@@ -27,4 +34,5 @@
 - Default ImGui theme changed to *Embrace The Darkness* by [janekb04](https://github.com/janekb04)
 
 
+[0.0.2]: https://github.com/TyomaVader/ImGuiNotify/releases/tag/v0.0.2
 [0.0.1]: https://github.com/TyomaVader/ImGuiNotify/releases/tag/v0.0.1
