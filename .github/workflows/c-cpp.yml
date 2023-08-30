@@ -20,3 +20,22 @@ jobs:
       run: |
         cd example
         make
+
+  Windows:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - uses: lukka/get-cmake@latest
+    - name: Create Build Environment
+      shell: bash
+      run: cmake -E make_directory ${{github.workspace}}/win32Example/build
+    - name: Configure CMake
+      shell: bash
+      working-directory: ${{github.workspace}}/win32Example/build
+      run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON
+    - name: Build
+      working-directory: ${{github.workspace}}/win32Example/build
+      shell: bash
+      # Execute the build.  You can specify a specific target with "--target <NAME>"
+      run: cmake --build . --config $BUILD_TYPE --target test
