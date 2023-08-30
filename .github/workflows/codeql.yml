@@ -71,7 +71,7 @@ jobs:
         sudo apt-get install -y libglfw3-dev libsdl2-dev gcc-multilib g++-multilib libfreetype6-dev libvulkan-dev g++-12
     - name: make
       run: |
-        cd example
+        cd unixExample
         make
 
     - name: Perform CodeQL Analysis
