@@ -224,7 +224,7 @@ namespace ImGui
 	/// <summary>
 	/// Insert a new toast in the list
 	/// </summary>
-	NOTIFY_INLINE VOID InsertNotification(const ImGuiToast& toast)
+	NOTIFY_INLINE void InsertNotification(const ImGuiToast& toast)
 	{
 		notifications.push_back(toast);
 	}
@@ -233,7 +233,7 @@ namespace ImGui
 	/// Remove a toast from the list by its index
 	/// </summary>
 	/// <param name="index">index of the toast to remove</param>
-	NOTIFY_INLINE VOID RemoveNotification(int index)
+	NOTIFY_INLINE void RemoveNotification(int index)
 	{
 		notifications.erase(notifications.begin() + index);
 	}
@@ -241,7 +241,7 @@ namespace ImGui
 	/// <summary>
 	/// Render toasts, call at the end of your rendering!
 	/// </summary>
-	NOTIFY_INLINE VOID RenderNotifications()
+	NOTIFY_INLINE void RenderNotifications()
 	{
 		const auto vp_size = GetMainViewport()->Size;
 
@@ -345,7 +345,7 @@ namespace ImGui
 	/// Adds font-awesome font, must be called ONCE on initialization
 	/// <param name="FontDataOwnedByAtlas">Fonts are loaded from read-only memory, should be set to false!</param>
 	/// </summary>
-	NOTIFY_INLINE VOID MergeIconsWithLatestFont(float font_size, bool FontDataOwnedByAtlas = false)
+	NOTIFY_INLINE void MergeIconsWithLatestFont(float font_size, bool FontDataOwnedByAtlas = false)
 	{
 		static const ImWchar icons_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
 
