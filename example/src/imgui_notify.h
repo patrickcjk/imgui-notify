@@ -206,7 +206,7 @@ public:
 
 		this->type = type;
 		this->dismiss_time = dismiss_time;
-		this->creation_time = GetTickCount64();
+		this->creation_time = get_tick_count();
 
 		memset(this->title, 0, sizeof(this->title));
 		memset(this->content, 0, sizeof(this->content));
