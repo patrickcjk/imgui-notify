@@ -44,12 +44,12 @@ if (!fontAwesomeFile.good())
     abort();
 }
 
-static const ImWchar icons_ranges[] = {ICON_MIN_FA, ICON_MAX_16_FA, 0};
-ImFontConfig icons_config;
-icons_config.MergeMode = true;
-icons_config.PixelSnapH = true;
-icons_config.GlyphMinAdvanceX = iconFontSize;
-io.Fonts->AddFontFromFileTTF(FONT_ICON_FILE_NAME_FAS, iconFontSize, &icons_config, icons_ranges);
+static const ImWchar iconsRanges[] = {ICON_MIN_FA, ICON_MAX_16_FA, 0};
+ImFontConfig iconsConfig;
+iconsConfig.MergeMode = true;
+iconsConfig.PixelSnapH = true;
+iconsConfig.GlyphMinAdvanceX = iconFontSize;
+io.Fonts->AddFontFromFileTTF(FONT_ICON_FILE_NAME_FAS, iconFontSize, &iconsConfig, iconsRanges);
 ```
 ### Create notifications
 - Success
@@ -57,7 +57,6 @@ io.Fonts->AddFontFromFileTTF(FONT_ICON_FILE_NAME_FAS, iconFontSize, &icons_confi
 ImGui::InsertNotification({ImGuiToastType::Success, 3000, "That is a success! %s", "(Format here)"});
 ```
 ![success](https://github.com/TyomaVader/ImGuiNotify/assets/67346255/1d4768d0-a20a-45c3-a939-c6aeb21bbfa8)
-
 
 - Warning
 ```c++

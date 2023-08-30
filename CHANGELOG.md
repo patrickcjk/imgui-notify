@@ -6,6 +6,8 @@
 - Added CMake support, see CMakeLists.txt for details
 - Optional dismiss button for notifications added
 - Added an optional button to the notification that executes a user-defined function
+- Documentation fixes and examples
+- GitHub Actions for Linux and Windows builds configured
 
 ## [0.0.1] - 28.07.2023
 
