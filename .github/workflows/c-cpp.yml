@@ -2,9 +2,9 @@ name: Linux build tests
 
 on:
   push:
-    branches: [ "Dev", "WindowsGitHubActions" ]
+    branches: [ "Dev" ]
   pull_request:
-    branches: [ "Dev", "WindowsGitHubActions" ]
+    branches: [ "Dev" ]
 
 jobs:
   Linux:
@@ -33,12 +33,10 @@ jobs:
     - name: Configure CMake
       shell: powershell
       run: |
-        ls
         cd win32Example
         cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=Release -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON
     - name: Build
       shell: powershell
       run: |
-        ls
         cd win32Example
         cmake --build . --config Release --target test
