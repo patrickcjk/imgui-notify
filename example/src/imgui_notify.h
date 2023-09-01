@@ -276,8 +276,8 @@ namespace ImGui
 			text_color.w = opacity;
 
 			// Generate new unique name for this toast
-			char window_name[50];
-			sprintf_s(window_name, "##TOAST%d", i);
+			char window_name[50]{};
+			snprintf(window_name, sizeof(window_name), "##TOAST%d", i);
 
 			//PushStyleColor(ImGuiCol_Text, text_color);
 			SetNextWindowBgAlpha(opacity);
