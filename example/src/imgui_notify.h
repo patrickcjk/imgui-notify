@@ -116,7 +116,7 @@ public:
 
 	NOTIFY_INLINE auto get_type() -> const ImGuiToastType& { return this->type; };
 
-	NOTIFY_INLINE auto get_color() -> const ImVec4&
+	NOTIFY_INLINE auto get_color() -> const ImVec4
 	{
 		switch (this->type)
 		{
@@ -158,7 +158,7 @@ public:
 
 	NOTIFY_INLINE auto get_elapsed_time() { return get_tick_count() - this->creation_time; }
 
-	NOTIFY_INLINE auto get_phase() -> const ImGuiToastPhase&
+	NOTIFY_INLINE auto get_phase() -> const ImGuiToastPhase
 	{
 		const auto elapsed = get_elapsed_time();
 
