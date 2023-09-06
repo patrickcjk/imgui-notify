@@ -24,7 +24,7 @@
 
 #define NOTIFY_INLINE					inline
 #define NOTIFY_NULL_OR_EMPTY(str)		(!str ||! strlen(str))
-#define NOTIFY_FORMAT(fn, format, ...)	if (format) { va_list args; va_start(args, format); fn(format, args, __VA_ARGS__); va_end(args); }
+#define NOTIFY_FORMAT(fn, format, ...)	if (format) { va_list args; va_start(args, format); fn(format, args, ##__VA_ARGS__); va_end(args); }
 
 typedef int ImGuiToastType;
 typedef int ImGuiToastPhase;
@@ -106,6 +106,8 @@ public:
 				return "Error";
 			case ImGuiToastType_Info:
 				return "Info";
+			default:
+				return NULL;
 			}
 		}
 
@@ -114,7 +116,7 @@ public:
 
 	NOTIFY_INLINE auto get_type() -> const ImGuiToastType& { return this->type; };
 
-	NOTIFY_INLINE auto get_color() -> const ImVec4&
+	NOTIFY_INLINE auto get_color() -> const ImVec4
 	{
 		switch (this->type)
 		{
@@ -128,6 +130,8 @@ public:
 			return { 255, 0, 0, 255 }; // Error
 		case ImGuiToastType_Info:
 			return { 0, 157, 255, 255 }; // Blue
+		default:
+			return { 255, 255, 255, 255 }; // White
 		}
 	}
 
@@ -145,6 +149,8 @@ public:
 			return ICON_FA_TIMES_CIRCLE;
 		case ImGuiToastType_Info:
 			return ICON_FA_INFO_CIRCLE;
+		default:
+			return NULL;
 		}
 	}
 
@@ -152,7 +158,7 @@ public:
 
 	NOTIFY_INLINE auto get_elapsed_time() { return get_tick_count() - this->creation_time; }
 
-	NOTIFY_INLINE auto get_phase() -> const ImGuiToastPhase&
+	NOTIFY_INLINE auto get_phase() -> const ImGuiToastPhase
 	{
 		const auto elapsed = get_elapsed_time();
 
@@ -206,7 +212,7 @@ public:
 
 		this->type = type;
 		this->dismiss_time = dismiss_time;
-		this->creation_time = GetTickCount64();
+		this->creation_time = get_tick_count();
 
 		memset(this->title, 0, sizeof(this->title));
 		memset(this->content, 0, sizeof(this->content));
@@ -224,7 +230,7 @@ namespace ImGui
 	/// <summary>
 	/// Insert a new toast in the list
 	/// </summary>
-	NOTIFY_INLINE VOID InsertNotification(const ImGuiToast& toast)
+	NOTIFY_INLINE void InsertNotification(const ImGuiToast& toast)
 	{
 		notifications.push_back(toast);
 	}
@@ -233,7 +239,7 @@ namespace ImGui
 	/// Remove a toast from the list by its index
 	/// </summary>
 	/// <param name="index">index of the toast to remove</param>
-	NOTIFY_INLINE VOID RemoveNotification(int index)
+	NOTIFY_INLINE void RemoveNotification(int index)
 	{
 		notifications.erase(notifications.begin() + index);
 	}
@@ -241,7 +247,7 @@ namespace ImGui
 	/// <summary>
 	/// Render toasts, call at the end of your rendering!
 	/// </summary>
-	NOTIFY_INLINE VOID RenderNotifications()
+	NOTIFY_INLINE void RenderNotifications()
 	{
 		const auto vp_size = GetMainViewport()->Size;
 
@@ -270,8 +276,8 @@ namespace ImGui
 			text_color.w = opacity;
 
 			// Generate new unique name for this toast
-			char window_name[50];
-			sprintf_s(window_name, "##TOAST%d", i);
+			char window_name[50]{};
+			snprintf(window_name, sizeof(window_name), "##TOAST%d", i);
 
 			//PushStyleColor(ImGuiCol_Text, text_color);
 			SetNextWindowBgAlpha(opacity);
@@ -345,7 +351,7 @@ namespace ImGui
 	/// Adds font-awesome font, must be called ONCE on initialization
 	/// <param name="FontDataOwnedByAtlas">Fonts are loaded from read-only memory, should be set to false!</param>
 	/// </summary>
-	NOTIFY_INLINE VOID MergeIconsWithLatestFont(float font_size, bool FontDataOwnedByAtlas = false)
+	NOTIFY_INLINE void MergeIconsWithLatestFont(float font_size, bool FontDataOwnedByAtlas = false)
 	{
 		static const ImWchar icons_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
 
