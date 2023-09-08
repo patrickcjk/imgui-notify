@@ -347,6 +347,98 @@ namespace ImGui
 		}
 	}
 
+	NOTIFY_INLINE void RenderNotificationsCustomDraw()
+	{
+		ImDrawList* draw_list = GetForegroundDrawList();
+		const auto vp_size = GetMainViewport()->Size;
+
+		float height = 0.f;
+
+		for (auto i = 0; i < notifications.size(); i++)
+		{
+			auto* current_toast = &notifications[i];
+
+			if (current_toast->get_phase() == ImGuiToastPhase_Expired)
+			{
+				RemoveNotification(i);
+				continue;
+			}
+
+			const auto icon = current_toast->get_icon();
+			const auto title = current_toast->get_title();
+			const auto content = current_toast->get_content();
+			const auto default_title = current_toast->get_default_title();
+			const auto opacity = current_toast->get_fade_percent();
+
+			auto text_color = current_toast->get_color();
+			auto text_color_ = ImColor(255, 255, 255, 255);
+			text_color.w = opacity;
+
+			ImVec2 textSize = NOTIFY_NULL_OR_EMPTY(title) ? ImVec2(0, 0) : CalcTextSize(title);
+			ImVec2 defaultTitleSize = NOTIFY_NULL_OR_EMPTY(default_title) ? ImVec2(0, 0) : CalcTextSize(default_title);
+			ImVec2 iconSize = NOTIFY_NULL_OR_EMPTY(icon) ? ImVec2(0, 0) : CalcTextSize(icon);
+			ImVec2 contentSize = NOTIFY_NULL_OR_EMPTY(content) ? ImVec2(0, 0) : CalcTextSize(content);
+
+			float iconTextSpacing = NOTIFY_NULL_OR_EMPTY(icon) ? 0 : 10.0f;
+			float textContentSpacing = NOTIFY_NULL_OR_EMPTY(content) ? 0 : 10.0f;
+
+			float maxIconAndTextWidth = (iconSize.x + textSize.x) > (iconSize.x + defaultTitleSize.x) ? (iconSize.x + textSize.x) : (iconSize.x + defaultTitleSize.x);
+			float maxContentWidth = maxIconAndTextWidth > contentSize.x ? maxIconAndTextWidth : contentSize.x;
+
+			float totalWidth = NOTIFY_PADDING_X + maxContentWidth + iconTextSpacing + textContentSpacing + NOTIFY_PADDING_X;
+
+			float maxTextHeight = textSize.y > defaultTitleSize.y ? textSize.y : defaultTitleSize.y;
+
+			float totalHeight = NOTIFY_PADDING_MESSAGE_Y + iconSize.y + maxTextHeight + contentSize.y + textContentSpacing + NOTIFY_PADDING_MESSAGE_Y - 15.0f;
+
+
+
+			ImVec2 pos = ImVec2(vp_size.x - totalWidth - NOTIFY_PADDING_X, vp_size.y - totalHeight - height - NOTIFY_PADDING_Y);
+
+			draw_list->AddRectFilled(pos, ImVec2(pos.x + totalWidth, pos.y + totalHeight), IM_COL32(43, 43, 43, 255 * opacity), 5.0f);
+
+
+			ImU32 im_text_color = ImColor(text_color);
+
+			pos.x += NOTIFY_PADDING_X;
+			pos.y += NOTIFY_PADDING_MESSAGE_Y;
+
+			if (!NOTIFY_NULL_OR_EMPTY(icon))
+			{
+				draw_list->AddText(pos, im_text_color, icon);
+				pos.x += iconSize.x + iconTextSpacing;
+			}
+
+			if (!NOTIFY_NULL_OR_EMPTY(title))
+			{
+				draw_list->AddText(pos, text_color_, title);
+				pos.y += textSize.y + textContentSpacing;
+				pos.x = vp_size.x - totalWidth - NOTIFY_PADDING_X + NOTIFY_PADDING_X;
+			}
+			else if (!NOTIFY_NULL_OR_EMPTY(default_title)) // Check if the default title is not null here and render it
+			{
+				ImVec2 defaultTitleSize = CalcTextSize(default_title);
+
+				draw_list->AddText(pos, text_color_, default_title);
+				pos.y += defaultTitleSize.y + textContentSpacing;
+				pos.x = vp_size.x - totalWidth - NOTIFY_PADDING_X + NOTIFY_PADDING_X;
+			}
+
+			if (!NOTIFY_NULL_OR_EMPTY(content))
+			{
+				if (title)
+				{
+					draw_list->AddLine(ImVec2(pos.x, pos.y - 5.0f),
+						ImVec2(pos.x + totalWidth - NOTIFY_PADDING_X * 2, pos.y - 5.0f),
+						IM_COL32(100, 100, 100, 255 * opacity));
+				}
+				draw_list->AddText(pos, text_color_, content);
+			}
+
+			height += totalHeight + NOTIFY_PADDING_Y;
+		}
+	}
+
 	/// <summary>
 	/// Adds font-awesome font, must be called ONCE on initialization
 	/// <param name="FontDataOwnedByAtlas">Fonts are loaded from read-only memory, should be set to false!</param>
