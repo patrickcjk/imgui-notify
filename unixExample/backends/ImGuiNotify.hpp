@@ -23,7 +23,6 @@
 #include "imgui_internal.h"
 
 #include "IconsFontAwesome6.h"
-#include "fa_solid_900.h"
 
 
 

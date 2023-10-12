@@ -1,5 +1,13 @@
 # Changelog
 
+## WIP - 12.10.2023
+
+### Changed
+- README clarifications.(#5)
+
+### Fixed
+- Removed unnecessary files. (#5)
+
 ## [0.0.2] - 30.08.2023
 
 ### Added

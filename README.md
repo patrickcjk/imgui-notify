@@ -1,7 +1,11 @@
 #  ImGuiNotify
 Is a header-only wrapper made to create notifications with [Dear ImGui](https://github.com/ocornut/imgui). Fork of [imgui-notify](https://github.com/patrickcjk/imgui-notify) by [patrickcjk](https://github.com/patrickcjk).
 
-Requires [Font Awesome 6](https://fontawesome.com/) for icons ([Setup example](https://github.com/juliettef/IconFontCppHeaders)).
+> [!IMPORTANT]
+> Requires [Font Awesome 6](https://fontawesome.com/) for icons ([Setup example](https://github.com/juliettef/IconFontCppHeaders)).
+
+> [!IMPORTANT]
+> Requires [C++17](https://en.cppreference.com/w/cpp/17) or later.
 
 ## Latest changes (v0.0.1 & v0.0.2)
 ### Added
@@ -59,7 +63,7 @@ iconsConfig.PixelSnapH = true;
 iconsConfig.GlyphMinAdvanceX = iconFontSize;
 io.Fonts->AddFontFromFileTTF(FONT_ICON_FILE_NAME_FAS, iconFontSize, &iconsConfig, iconsRanges);
 ```
-> **Warning**
+> [!WARNING]
 > FONT_ICON_FILE_NAME_FAS may require a different path depending on your project structure, see ```IconsFontAwesome6.h``` for details. Incorrect path will result in a runtime error.
 ### Create notifications
 - Success
@@ -129,6 +133,9 @@ ImGui::PopStyleColor(1);
 ```
 
 ## Showcase
+> [!NOTE]
+> The following preview uses an Embrace The Darkness theme by janekb04(https://github.com/janekb04). It can be found in the `main.cpp`.
+
 https://github.com/TyomaVader/ImGuiNotify/assets/67346255/c4d9ee3c-5725-4d8d-89ee-670d9ecd3378
 
 ## License
