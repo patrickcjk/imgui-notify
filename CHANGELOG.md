@@ -3,10 +3,11 @@
 ## WIP - 12.10.2023
 
 ### Changed
-- README clarifications.(#5)
+- README clarifications. ([#5](https://github.com/TyomaVader/ImGuiNotify/issues/5))
+- Upgraded Dear ImGui version used in example (Unix) to [v1.90 WIP](https://github.com/ocornut/imgui/commit/72ebd91567148b4d3dca073c7229c4c0462a0586)
 
 ### Fixed
-- Removed unnecessary files. (#5)
+- Removed unnecessary files. ([#5](https://github.com/TyomaVader/ImGuiNotify/issues/5))
 
 ## [0.0.2] - 30.08.2023
 
@@ -39,7 +40,7 @@
 - Code readability improved
 - Switched to Font Awesome 6 icons
 - Visual changes to the notifications (can be customized in the ```main.cpp``` file)
-- Default ImGui theme changed to *Embrace The Darkness* by [janekb04](https://github.com/janekb04)
+- Default ImGui theme changed to *Embrace The Darkness* by [@janekb04](https://github.com/janekb04)
 
 
 [0.0.2]: https://github.com/TyomaVader/ImGuiNotify/releases/tag/v0.0.2

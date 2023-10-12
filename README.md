@@ -64,7 +64,7 @@ iconsConfig.GlyphMinAdvanceX = iconFontSize;
 io.Fonts->AddFontFromFileTTF(FONT_ICON_FILE_NAME_FAS, iconFontSize, &iconsConfig, iconsRanges);
 ```
 > [!WARNING]
-> FONT_ICON_FILE_NAME_FAS may require a different path depending on your project structure, see ```IconsFontAwesome6.h``` for details. Incorrect path will result in a runtime error.
+> `FONT_ICON_FILE_NAME_FAS` may require a different path depending on your project structure, see ```IconsFontAwesome6.h``` for details. Incorrect path will result in a runtime error.
 ### Create notifications
 - Success
 ```c++
@@ -134,7 +134,7 @@ ImGui::PopStyleColor(1);
 
 ## Showcase
 > [!NOTE]
-> The following preview uses an Embrace The Darkness theme by janekb04(https://github.com/janekb04). It can be found in the `main.cpp`.
+> The following preview uses an Embrace The Darkness theme by [@janekb04](https://github.com/janekb04). It can be found in the `main.cpp`.
 
 https://github.com/TyomaVader/ImGuiNotify/assets/67346255/c4d9ee3c-5725-4d8d-89ee-670d9ecd3378
 
