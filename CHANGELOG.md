@@ -4,10 +4,11 @@
 
 ### Changed
 - README clarifications. ([#5](https://github.com/TyomaVader/ImGuiNotify/issues/5))
-- Upgraded Dear ImGui version used in example (Unix) to [v1.90 WIP](https://github.com/ocornut/imgui/commit/72ebd91567148b4d3dca073c7229c4c0462a0586)
+- Upgraded Dear ImGui version used in example (Unix & Windows) to [v1.90 WIP](https://github.com/ocornut/imgui/commit/72ebd91567148b4d3dca073c7229c4c0462a0586)
 
 ### Fixed
 - Removed unnecessary files. ([#5](https://github.com/TyomaVader/ImGuiNotify/issues/5))
+- Warnings fixed in Windows example.
 
 ## [0.0.2] - 30.08.2023
 
