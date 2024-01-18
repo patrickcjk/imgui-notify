@@ -5,8 +5,8 @@
  * Based on imgui-notify by patrickcjk
  * https://github.com/patrickcjk/imgui-notify
  * 
- * @version 0.0.1 by TyomaVader
- * @date 28.07.2023
+ * @version 0.0.3 WIP by TyomaVader
+ * @date 18.01.2024
  */
 
 #ifndef IMGUI_NOTIFY
@@ -36,16 +36,16 @@
  * CONFIGURATION SECTION Start
 */
 
-#define NOTIFY_MAX_MSG_LENGTH			4096		// Max message content length
-#define NOTIFY_PADDING_X				20.f		// Bottom-left X padding
-#define NOTIFY_PADDING_Y				20.f		// Bottom-left Y padding
-#define NOTIFY_PADDING_MESSAGE_Y		10.f		// Padding Y between each message
-#define NOTIFY_FADE_IN_OUT_TIME			150			// Fade in and out duration
-#define NOTIFY_DEFAULT_DISMISS			3000		// Auto dismiss after X ms (default, applied only of no data provided in constructors)
-#define NOTIFY_OPACITY					0.8f		// 0-1 Toast opacity
-#define NOTIFY_USE_SEPARATOR 			false 		// If true, a separator will be rendered between the title and the content
-#define NOTIFY_USE_DISMISS_BUTTON		true		// If true, a dismiss button will be rendered in the top right corner of the toast
-
+#define NOTIFY_MAX_MSG_LENGTH				4096		// Max message content length
+#define NOTIFY_PADDING_X					20.f		// Bottom-left X padding
+#define NOTIFY_PADDING_Y					20.f		// Bottom-left Y padding
+#define NOTIFY_PADDING_MESSAGE_Y			10.f		// Padding Y between each message
+#define NOTIFY_FADE_IN_OUT_TIME				150			// Fade in and out duration
+#define NOTIFY_DEFAULT_DISMISS				3000		// Auto dismiss after X ms (default, applied only of no data provided in constructors)
+#define NOTIFY_OPACITY						0.8f		// 0-1 Toast opacity
+#define NOTIFY_USE_SEPARATOR 				false 		// If true, a separator will be rendered between the title and the content
+#define NOTIFY_USE_DISMISS_BUTTON			true		// If true, a dismiss button will be rendered in the top right corner of the toast
+#define NOTIFY_RENDER_LIMIT					5			// Max number of toasts rendered at the same time. Set to 0 for unlimited
 
 /**
  * CONFIGURATION SECTION End
@@ -493,7 +493,7 @@ namespace ImGui
 
 		float height = 0.f;
 
-		for (int i = 0; i < notifications.size(); i++)
+		for (size_t i = 0; i < notifications.size(); ++i)
 		{
 			ImGuiToast* currentToast = &notifications[i];
 
@@ -503,6 +503,13 @@ namespace ImGui
 				RemoveNotification(i);
 				continue;
 			}
+
+			#if NOTIFY_RENDER_LIMIT > 0
+				if (i > NOTIFY_RENDER_LIMIT)
+				{
+					continue;
+				}
+			#endif
 
 			// Get icon, title and other data
 			const char* icon = currentToast->getIcon();

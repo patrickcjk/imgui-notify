@@ -1,6 +1,9 @@
 # Changelog
 
-## WIP - 12.10.2023
+## WIP - 18.01.2024
+
+### Added
+- Simultanious notification rendering limit (See ```NOTIFY_RENDER_LIMIT```)
 
 ### Changed
 - README clarifications. ([#5](https://github.com/TyomaVader/ImGuiNotify/issues/5))

@@ -31,14 +31,14 @@
 #include <vulkan/vulkan.h>
 //#include <vulkan/vulkan_beta.h>
 
-// // [Win32] Our example includes a copy of glfw3.lib pre-compiled with VS2010 to maximize ease of testing and compatibility with old VS compilers.
-// // To link with VS2010-era libraries, VS2015+ requires linking with legacy_stdio_definitions.lib, which we do using this pragma.
-// // Your own project should not be affected, as you are likely to link with a newer binary of GLFW that is adequate for your version of Visual Studio.
-// #if defined(_MSC_VER) && (_MSC_VER >= 1900) && !defined(IMGUI_DISABLE_WIN32_FUNCTIONS)
-// #pragma comment(lib, "legacy_stdio_definitions")
-// #endif
+// [Win32] Our example includes a copy of glfw3.lib pre-compiled with VS2010 to maximize ease of testing and compatibility with old VS compilers.
+// To link with VS2010-era libraries, VS2015+ requires linking with legacy_stdio_definitions.lib, which we do using this pragma.
+// Your own project should not be affected, as you are likely to link with a newer binary of GLFW that is adequate for your version of Visual Studio.
+#if defined(_MSC_VER) && (_MSC_VER >= 1900) && !defined(IMGUI_DISABLE_WIN32_FUNCTIONS)
+#pragma comment(lib, "legacy_stdio_definitions")
+#endif
 
-#define _DEBUG false
+#define _DEBUG true
 
 //#define IMGUI_UNLIMITED_FRAME_RATE
 #ifdef _DEBUG
@@ -433,8 +433,8 @@ void EmbraceTheDarkness()
     colors[ImGuiCol_TabActive]              = ImVec4(0.20f, 0.20f, 0.20f, 0.36f);
     colors[ImGuiCol_TabUnfocused]           = ImVec4(0.00f, 0.00f, 0.00f, 0.52f);
     colors[ImGuiCol_TabUnfocusedActive]     = ImVec4(0.14f, 0.14f, 0.14f, 1.00f);
-    colors[ImGuiCol_DockingPreview]         = ImVec4(0.33f, 0.67f, 0.86f, 1.00f);
-    colors[ImGuiCol_DockingEmptyBg]         = ImVec4(1.00f, 0.00f, 0.00f, 1.00f);
+    // colors[ImGuiCol_DockingPreview]         = ImVec4(0.33f, 0.67f, 0.86f, 1.00f);
+    // colors[ImGuiCol_DockingEmptyBg]         = ImVec4(1.00f, 0.00f, 0.00f, 1.00f);
     colors[ImGuiCol_PlotLines]              = ImVec4(1.00f, 0.00f, 0.00f, 1.00f);
     colors[ImGuiCol_PlotLinesHovered]       = ImVec4(1.00f, 0.00f, 0.00f, 1.00f);
     colors[ImGuiCol_PlotHistogram]          = ImVec4(1.00f, 0.00f, 0.00f, 1.00f);
@@ -517,10 +517,6 @@ int main(int, char**)
     ImGuiIO& io = ImGui::GetIO(); (void)io;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
     // io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
-    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;         // Enable Docking
-    io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;       // Enable Multi-Viewport / Platform Windows
-    //io.ConfigViewportsNoAutoMerge = true;
-    //io.ConfigViewportsNoTaskBarIcon = true;
 
 
 
@@ -530,7 +526,7 @@ int main(int, char**)
 
     // When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular ones.
     ImGuiStyle& style = ImGui::GetStyle();
-    if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+    if (io.ConfigFlags)
     {
         style.WindowRounding = 0.0f;
         style.Colors[ImGuiCol_WindowBg].w = 1.0f;
@@ -614,35 +610,35 @@ int main(int, char**)
 
 
 
-    // Upload Fonts
-    {
-        // Use any command queue
-        VkCommandPool command_pool = wd->Frames[wd->FrameIndex].CommandPool;
-        VkCommandBuffer command_buffer = wd->Frames[wd->FrameIndex].CommandBuffer;
+    // // Upload Fonts
+    // {
+    //     // Use any command queue
+    //     VkCommandPool command_pool = wd->Frames[wd->FrameIndex].CommandPool;
+    //     VkCommandBuffer command_buffer = wd->Frames[wd->FrameIndex].CommandBuffer;
 
-        err = vkResetCommandPool(g_Device, command_pool, 0);
-        check_vk_result(err);
-        VkCommandBufferBeginInfo begin_info = {};
-        begin_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-        begin_info.flags |= VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
-        err = vkBeginCommandBuffer(command_buffer, &begin_info);
-        check_vk_result(err);
+    //     err = vkResetCommandPool(g_Device, command_pool, 0);
+    //     check_vk_result(err);
+    //     VkCommandBufferBeginInfo begin_info = {};
+    //     begin_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+    //     begin_info.flags |= VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+    //     err = vkBeginCommandBuffer(command_buffer, &begin_info);
+    //     check_vk_result(err);
 
-        ImGui_ImplVulkan_CreateFontsTexture(command_buffer);
+    //     ImGui_ImplVulkan_CreateFontsTexture(command_buffer);
 
-        VkSubmitInfo end_info = {};
-        end_info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-        end_info.commandBufferCount = 1;
-        end_info.pCommandBuffers = &command_buffer;
-        err = vkEndCommandBuffer(command_buffer);
-        check_vk_result(err);
-        err = vkQueueSubmit(g_Queue, 1, &end_info, VK_NULL_HANDLE);
-        check_vk_result(err);
+    //     VkSubmitInfo end_info = {};
+    //     end_info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+    //     end_info.commandBufferCount = 1;
+    //     end_info.pCommandBuffers = &command_buffer;
+    //     err = vkEndCommandBuffer(command_buffer);
+    //     check_vk_result(err);
+    //     err = vkQueueSubmit(g_Queue, 1, &end_info, VK_NULL_HANDLE);
+    //     check_vk_result(err);
 
-        err = vkDeviceWaitIdle(g_Device);
-        check_vk_result(err);
-        ImGui_ImplVulkan_DestroyFontUploadObjects();
-    }
+    //     err = vkDeviceWaitIdle(g_Device);
+    //     check_vk_result(err);
+    //     ImGui_ImplVulkan_DestroyFontUploadObjects();
+    // }
 
 
     // Main loop
@@ -841,25 +837,17 @@ int main(int, char**)
 
         // Rendering
         ImGui::Render();
-        ImDrawData* main_draw_data = ImGui::GetDrawData();
-        const bool main_is_minimized = (main_draw_data->DisplaySize.x <= 0.0f || main_draw_data->DisplaySize.y <= 0.0f);
-        wd->ClearValue.color.float32[0] = clear_color.x * clear_color.w;
-        wd->ClearValue.color.float32[1] = clear_color.y * clear_color.w;
-        wd->ClearValue.color.float32[2] = clear_color.z * clear_color.w;
-        wd->ClearValue.color.float32[3] = clear_color.w;
-        if (!main_is_minimized)
-            FrameRender(wd, main_draw_data);
-
-        // Update and Render additional Platform Windows
-        if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+        ImDrawData* draw_data = ImGui::GetDrawData();
+        const bool is_minimized = (draw_data->DisplaySize.x <= 0.0f || draw_data->DisplaySize.y <= 0.0f);
+        if (!is_minimized)
         {
-            ImGui::UpdatePlatformWindows();
-            ImGui::RenderPlatformWindowsDefault();
-        }
-
-        // Present Main Platform Window
-        if (!main_is_minimized)
+            wd->ClearValue.color.float32[0] = clear_color.x * clear_color.w;
+            wd->ClearValue.color.float32[1] = clear_color.y * clear_color.w;
+            wd->ClearValue.color.float32[2] = clear_color.z * clear_color.w;
+            wd->ClearValue.color.float32[3] = clear_color.w;
+            FrameRender(wd, draw_data);
             FramePresent(wd);
+        }
     }
 
     // Cleanup

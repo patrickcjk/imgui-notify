@@ -2,9 +2,8 @@
 // This needs to be used along with a Platform Backend (e.g. GLFW, SDL, Win32, custom..)
 
 // Implemented features:
-//  [x] Renderer: User texture binding. Use 'VkDescriptorSet' as ImTextureID. Read the FAQ about ImTextureID! See https://github.com/ocornut/imgui/pull/914 for discussions.
+//  [!] Renderer: User texture binding. Use 'VkDescriptorSet' as ImTextureID. Read the FAQ about ImTextureID! See https://github.com/ocornut/imgui/pull/914 for discussions.
 //  [X] Renderer: Large meshes support (64k+ vertices) with 16-bit indices.
-//  [x] Renderer: Multi-viewport / platform windows. With issues (flickering when creating a new viewport).
 
 // Important: on 32-bit systems, user texture binding is only supported if your imconfig file has '#define ImTextureID ImU64'.
 // See imgui_impl_vulkan.cpp file for details.
@@ -72,6 +71,7 @@ struct ImGui_ImplVulkan_InitInfo
     // Allocation, Debugging
     const VkAllocationCallbacks*    Allocator;
     void                            (*CheckVkResultFn)(VkResult err);
+    VkDeviceSize                    MinAllocationSize;      // Minimum allocation size. Set to 1024*1024 to satisfy zealous best practices validation layer and waste a little memory.
 };
 
 // Called by user code
@@ -79,8 +79,8 @@ IMGUI_IMPL_API bool         ImGui_ImplVulkan_Init(ImGui_ImplVulkan_InitInfo* inf
 IMGUI_IMPL_API void         ImGui_ImplVulkan_Shutdown();
 IMGUI_IMPL_API void         ImGui_ImplVulkan_NewFrame();
 IMGUI_IMPL_API void         ImGui_ImplVulkan_RenderDrawData(ImDrawData* draw_data, VkCommandBuffer command_buffer, VkPipeline pipeline = VK_NULL_HANDLE);
-IMGUI_IMPL_API bool         ImGui_ImplVulkan_CreateFontsTexture(VkCommandBuffer command_buffer);
-IMGUI_IMPL_API void         ImGui_ImplVulkan_DestroyFontUploadObjects();
+IMGUI_IMPL_API bool         ImGui_ImplVulkan_CreateFontsTexture();
+IMGUI_IMPL_API void         ImGui_ImplVulkan_DestroyFontsTexture();
 IMGUI_IMPL_API void         ImGui_ImplVulkan_SetMinImageCount(uint32_t min_image_count); // To override MinImageCount after initialization (e.g. if swap chain is recreated)
 
 // Register a texture (VkDescriptorSet == ImTextureID)
